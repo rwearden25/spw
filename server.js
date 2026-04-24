@@ -108,17 +108,47 @@ app.post('/api/quote', rateLimit, async (req, res) => {
 
 app.get('/sitemap.xml', (req, res) => {
   const host = process.env.SITE_URL || `https://${req.headers.host}`;
+  const today = new Date().toISOString().split('T')[0];
   res.header('Content-Type', 'application/xml');
+  // Include in-page anchors so Google indexes each section as a distinct
+  // discovery target for service-specific queries (e.g. "roof cleaning fort worth").
+  const urls = [
+    { path: '/',            pri: '1.0', freq: 'weekly' },
+    { path: '/#services',   pri: '0.9', freq: 'monthly' },
+    { path: '/#estimator',  pri: '0.9', freq: 'monthly' },
+    { path: '/#work',       pri: '0.8', freq: 'weekly' },
+    { path: '/#benefits',   pri: '0.7', freq: 'monthly' },
+    { path: '/#about',      pri: '0.6', freq: 'monthly' },
+    { path: '/#quote',      pri: '0.9', freq: 'monthly' },
+    { path: '/#contact',    pri: '0.7', freq: 'monthly' }
+  ];
+  const body = urls.map(u =>
+    `  <url><loc>${host}${u.path}</loc><lastmod>${today}</lastmod><changefreq>${u.freq}</changefreq><priority>${u.pri}</priority></url>`
+  ).join('\n');
   res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${host}/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+${body}
 </urlset>`);
 });
 
 app.get('/robots.txt', (req, res) => {
   const host = process.env.SITE_URL || 'https://standardpowerwashing.com';
   res.type('text/plain');
-  res.send(`User-agent: *\nAllow: /\nSitemap: ${host}/sitemap.xml`);
+  // Explicitly invite major crawlers and declare the sitemap.
+  res.send(
+    'User-agent: *\n' +
+    'Allow: /\n' +
+    'Disallow: /api/\n' +
+    'Disallow: /leads.log\n' +
+    '\n' +
+    'User-agent: Googlebot\n' +
+    'Allow: /\n' +
+    '\n' +
+    'User-agent: Bingbot\n' +
+    'Allow: /\n' +
+    '\n' +
+    `Sitemap: ${host}/sitemap.xml\n`
+  );
 });
 
 app.get('*', (req, res) => {
