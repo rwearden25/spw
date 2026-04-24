@@ -1,0 +1,15 @@
+{
+  "name": "spw-site",
+  "version": "1.0.0",
+  "description": "Standard Power Washing LLC — commercial exterior cleaning, DFW.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
