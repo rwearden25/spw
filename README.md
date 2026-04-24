@@ -43,20 +43,26 @@ Site: http://localhost:3000
 
 Submissions go to `/api/quote`, appended to `leads.log`, and emailed via Resend if `RESEND_API_KEY` is set. Rate limit: 5 / hour / IP.
 
-## Theme tokens
+## Tech pattern
 
-Brand tokens live in `<style>` inside `index.html`:
+Single `index.html` that mounts a React app via ESM:
+
+- **Tailwind** via CDN (`cdn.tailwindcss.com`)
+- **React 18 + react-icons** via `esm.sh` (`importmap`)
+- Google Fonts: **Cinzel** (display, matches the live site's `Cinzel`), **Lato** (body, matches the live site), **Cabin** (labels)
+- Custom atmospheric CSS (`bg-hydro` layered radials, `mist` drift animation, `grain` overlay)
+- Express backend (`server.js`) still serves the file and handles `/api/quote` → Resend
+
+## Theme: "Hydro"
+
+Matches the live site's real palette (dark near-black + slate-blues + white — no teal, no green):
 
 ```css
-:root {
-  --bg:#ffffff;          /* white canvas */
-  --bg-soft:#f7f9fa;     /* off-white section fill */
-  --bg-tint:#eef9f8;     /* soft teal tint */
-  --ink:#1a202c;         /* dark charcoal body */
-  --teal:#14b8a6;        /* primary accent / CTA */
-  --teal-deep:#0f766e;   /* headings accent */
-  --teal-100:#99f6e4;    /* highlight */
-}
+/* canvas */     #0b1018  /* deep hydro */
+/* surface */    rgba(255,255,255,0.055) + blur  /* card-glass */
+/* borders */    rgba(200,220,255,0.09)          /* hairline */
+/* text */       #e6edf5 / #b0c0d6 (steel) / #7f8ea8 (slate)
+/* CTA */        polished-steel gradient (#fff → #d3dbe8 on #0b1018)
 ```
 
-Aesthetic: matches the live `standardpowerwashing.com` theme — white canvas, dark charcoal text, teal accents, soft rounded corners (10-20px), subtle shadows for depth, sticky blurred header, generous whitespace. **Manrope** geometric sans across display + body for a clean, modern, user-friendly feel. Gentle scroll-reveal animations; pulse indicator on hero badge; smooth press-down on buttons with teal shadow depth cue.
+Atmosphere: cool radial glows suggesting water-lit space, pale mist particles drifting upward behind the hero, subtle grain overlay, italic Cinzel pulls for emphasis words (`power washing`, `cleanliness`, `touch`). All imagery is **real SPW work photos + their actual logo** from `img1.wsimg.com/isteam/ip/93f78982-b83a-41d3-9e29-d59d8d1ff91c/`. Hero background is the Getty landscaper-with-pressure-washer still used on the live homepage.
