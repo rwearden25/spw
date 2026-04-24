@@ -21,9 +21,23 @@ Site: http://localhost:3000
 |--------------------|------------------------------------------------------------|-------------------------------------------|
 | `PORT`             | Server port                                                | `3000`                                    |
 | `RESEND_API_KEY`   | Resend API key (omit to disable email; leads still logged) | —                                         |
-| `NOTIFY_EMAIL`     | Where quote requests get sent                              | `info@standardpowerwashing.com`           |
-| `FROM_EMAIL`       | Resend `from` header                                       | `Standard Power Washing <quotes@standardpowerwashing.com>` |
+| `NOTIFY_EMAIL`     | **Where quote requests get delivered** (your GoDaddy mailbox) | `info@standardpowerwashing.com`           |
+| `FROM_EMAIL`       | Resend `from` header (sandbox sender works out-of-the-box) | `Standard Power Washing <onboarding@resend.dev>` |
 | `SITE_URL`         | Canonical host for `sitemap.xml` / `robots.txt`            | derived from request                      |
+
+### To get leads landing in your GoDaddy mailbox (info@standardpowerwashing.com)
+
+1. Sign up at [resend.com](https://resend.com) and create an API key.
+2. In Railway → **Variables**, add:
+   ```
+   RESEND_API_KEY=re_xxxxxxxxxxxxx
+   ```
+   That's the only variable you *must* set. `NOTIFY_EMAIL` already defaults to `info@standardpowerwashing.com`, and `FROM_EMAIL` already defaults to Resend's verified sandbox sender.
+3. Submit a test request from the live site. The email lands in your info@ GoDaddy inbox with a clean HTML summary; the **Reply** button goes directly to the lead's email address (set via `reply_to`).
+
+**Later — branded sender (optional):** once you want emails to say "from `quotes@standardpowerwashing.com`" instead of `onboarding@resend.dev`, verify the domain in Resend (it gives you DKIM/SPF/MX records to add in GoDaddy's DNS panel), then set `FROM_EMAIL=Standard Power Washing <quotes@standardpowerwashing.com>` in Railway.
+
+**Belt-and-suspenders fallback:** every submission is also appended to `leads.log` on the server, so if Resend ever misbehaves you can still recover the leads from Railway's filesystem / logs.
 
 ## Deploy (Railway)
 

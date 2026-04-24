@@ -52,7 +52,10 @@ app.post('/api/quote', rateLimit, async (req, res) => {
 
   const RESEND_KEY = process.env.RESEND_API_KEY;
   const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'info@standardpowerwashing.com';
-  const FROM_EMAIL = process.env.FROM_EMAIL || 'Standard Power Washing <quotes@standardpowerwashing.com>';
+  // Default to Resend's sandbox sender so delivery works out-of-the-box
+  // (no DNS setup needed). Override FROM_EMAIL once standardpowerwashing.com
+  // is verified in Resend to send from your own domain.
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'Standard Power Washing <onboarding@resend.dev>';
 
   if (RESEND_KEY) {
     try {
@@ -81,6 +84,8 @@ app.post('/api/quote', rateLimit, async (req, res) => {
         body: JSON.stringify({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
+          // Let Ross hit "Reply" from info@ and respond directly to the lead
+          reply_to: email,
           subject: `New Quote: ${name}${propertyType ? ' — ' + propertyType : ''}`,
           html: emailHtml
         })
