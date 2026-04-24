@@ -548,17 +548,96 @@
         );
       };
 
-      // --- Work / Gallery (real SPW photos, neutral labels) ---
+      // --- Before/After compare slider ---
+      // Each image is a pre-composed before+after; split = 'v' (left/right) or 'h' (top/bottom)
+      const Compare = ({ src, alt = '', split = 'v' }) => {
+        const [pos, setPos] = useState(50);
+        const [dragging, setDragging] = useState(false);
+        const ref = useRef(null);
+        const isV = split === 'v';
+
+        const move = (clientX, clientY) => {
+          const el = ref.current; if (!el) return;
+          const r = el.getBoundingClientRect();
+          const p = isV ? ((clientX - r.left) / r.width) * 100 : ((clientY - r.top) / r.height) * 100;
+          setPos(Math.max(0, Math.min(100, p)));
+        };
+        const onDown = (e) => { setDragging(true); const t = e.touches ? e.touches[0] : e; move(t.clientX, t.clientY); };
+        const onMove = (e) => { if (!dragging) return; e.preventDefault(); const t = e.touches ? e.touches[0] : e; move(t.clientX, t.clientY); };
+        const onUp = () => setDragging(false);
+
+        useEffect(() => {
+          if (!dragging) return;
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+          window.addEventListener('touchmove', onMove, { passive: false });
+          window.addEventListener('touchend', onUp);
+          return () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+            window.removeEventListener('touchmove', onMove);
+            window.removeEventListener('touchend', onUp);
+          };
+        }, [dragging]);
+
+        const labelBase = 'absolute font-label text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md border hairline pointer-events-none transition-opacity duration-200';
+
+        return h('div', {
+          ref,
+          className: 'relative aspect-square overflow-hidden rounded-xl border hairline-2 bg-black/40 select-none group ' + (dragging ? '' : ''),
+          style: { touchAction: 'none', cursor: isV ? 'ew-resize' : 'ns-resize' },
+          onMouseDown: onDown,
+          onTouchStart: onDown
+        },
+          h('img', {
+            src, alt, loading: 'lazy', draggable: false,
+            className: 'absolute inset-0 w-full h-full object-cover pointer-events-none'
+          }),
+          // Before label
+          h('span', {
+            className: labelBase + ' ' + (isV ? 'top-2.5 left-2.5' : 'top-2.5 left-2.5'),
+            style: { opacity: pos > 10 ? 1 : 0.35 }
+          }, 'Before'),
+          // After label
+          h('span', {
+            className: labelBase + ' ' + (isV ? 'top-2.5 right-2.5' : 'bottom-2.5 left-2.5'),
+            style: { opacity: pos < 90 ? 1 : 0.35 }
+          }, 'After'),
+          // Slider line
+          h('div', {
+            className: 'absolute bg-white pointer-events-none',
+            style: isV
+              ? { top: 0, bottom: 0, left: `${pos}%`, width: '2.5px', transform: 'translateX(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
+              : { left: 0, right: 0, top: `${pos}%`, height: '2.5px', transform: 'translateY(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
+          }),
+          // Handle knob
+          h('div', {
+            className: 'absolute bg-white rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_0_4px_rgba(255,255,255,0.18)] pointer-events-none transition-transform duration-150 ' + (dragging ? 'scale-110' : 'group-hover:scale-105'),
+            style: isV
+              ? { top: '50%', left: `${pos}%`, width: '38px', height: '38px', transform: 'translate(-50%, -50%)' + (dragging ? ' scale(1.1)' : '') }
+              : { left: '50%', top: `${pos}%`, width: '38px', height: '38px', transform: 'translate(-50%, -50%)' + (dragging ? ' scale(1.1)' : '') }
+          },
+            h('svg', { viewBox: '0 0 24 24', width: 14, height: 14, fill: '#0f172a', style: { transform: isV ? 'none' : 'rotate(90deg)' } },
+              h('path', { d: 'M8 5l-5 7 5 7M16 5l5 7-5 7' })
+            )
+          )
+        );
+      };
+
+      // --- Work / Gallery (real SPW photos; compare-sliders, no number labels) ---
       const Work = () => {
+        // split tagged per image by eye from the composites:
+        // 01 gutter h, 02 steps v, 03 garage h, 04 concrete h,
+        // 05 siding v, 06 pool h, 07 chimneys v, 08 house h
         const imgs = [
-          { src: IMG.work1, tag: 'No. 01' },
-          { src: IMG.work2, tag: 'No. 02' },
-          { src: IMG.work3, tag: 'No. 03' },
-          { src: IMG.work4, tag: 'No. 04' },
-          { src: IMG.work5, tag: 'No. 05' },
-          { src: IMG.work6, tag: 'No. 06' },
-          { src: IMG.work7, tag: 'No. 07' },
-          { src: IMG.house, tag: 'No. 08' }
+          { src: IMG.work1, split: 'h', alt: 'Gutter cleaning before and after' },
+          { src: IMG.work2, split: 'v', alt: 'Concrete steps before and after' },
+          { src: IMG.work3, split: 'h', alt: 'Garage driveway before and after' },
+          { src: IMG.work4, split: 'h', alt: 'Concrete surface before and after' },
+          { src: IMG.work5, split: 'v', alt: 'House siding before and after' },
+          { src: IMG.work6, split: 'h', alt: 'Pool deck before and after' },
+          { src: IMG.work7, split: 'v', alt: 'Masonry before and after' },
+          { src: IMG.house, split: 'h', alt: 'Home exterior before and after' }
         ];
         return h('section', { id: 'work', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
@@ -568,15 +647,11 @@
                 'Rejuvenating ', h('span', { className: 'text-steel italic' }, 'surfaces.')
               ),
               h('p', { className: 'text-white/75 leading-relaxed' },
-                "From removing stubborn stains and dirt to rejuvenating surfaces, we deliver exceptional results that exceed our customers' expectations."
+                "Drag the slider on any tile to see the before and after. From removing stubborn stains and dirt to rejuvenating surfaces, we deliver exceptional results that exceed our customers' expectations."
               )
             ),
-            h('div', { className: 'rv grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3' },
-              imgs.map((x, i) => h('div', { key: i, className: 'zoomable relative overflow-hidden rounded-xl border hairline aspect-square bg-black/40' },
-                h('img', { src: x.src, alt: 'Standard Power Washing work ' + x.tag, loading: 'lazy', className: 'w-full h-full object-cover' }),
-                h('span', { className: 'absolute top-2.5 left-2.5 font-label text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white bg-black/60 backdrop-blur px-2 py-1 rounded-md border hairline' }, x.tag),
-                h('span', { className: 'absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none' })
-              ))
+            h('div', { className: 'rv grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4' },
+              imgs.map((x, i) => h(Compare, { key: i, src: x.src, split: x.split, alt: x.alt }))
             )
           )
         );
