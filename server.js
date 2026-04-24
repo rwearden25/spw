@@ -32,15 +32,15 @@ function rateLimit(req, res, next) {
 }
 
 app.post('/api/quote', rateLimit, async (req, res) => {
-  const { services, propertyType, details, timeline, name, phone, email, city } = req.body;
+  const { name, email, propertyType, stories, sqft, details } = req.body;
 
-  if (!name || !phone) {
-    return res.status(400).json({ success: false, message: 'Name and phone are required.' });
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: 'Name and email are required.' });
   }
 
   const timestamp = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
 
-  const logEntry = `\n--- QUOTE REQUEST ${timestamp} ---\nName: ${name}\nPhone: ${phone}\nEmail: ${email || 'N/A'}\nCity: ${city || 'N/A'}\nServices: ${(services || []).join(', ')}\nProperty: ${propertyType || 'N/A'}\nTimeline: ${timeline || 'N/A'}\nDetails: ${details || 'N/A'}\n`;
+  const logEntry = `\n--- QUOTE REQUEST ${timestamp} ---\nName: ${name}\nEmail: ${email}\nProperty: ${propertyType || 'N/A'}\nStories: ${stories || 'N/A'}\nSq Ft: ${sqft || 'N/A'}\nDetails: ${details || 'N/A'}\n`;
 
   try {
     fs.appendFileSync(path.join(__dirname, 'leads.log'), logEntry);
@@ -57,20 +57,18 @@ app.post('/api/quote', rateLimit, async (req, res) => {
   if (RESEND_KEY) {
     try {
       const emailHtml = `
-        <div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#faf7f0;padding:28px;border-radius:16px;border:1px solid #d9d3c2;">
-          <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#0f1115;margin-bottom:2px;letter-spacing:-0.02em;">New Quote Request</div>
-          <div style="color:#6b6f7c;margin-bottom:22px;font-size:13px;">${timestamp}</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;max-width:600px;margin:0 auto;background:#f5efe2;padding:28px;border-radius:8px;border:1px solid #ddd4bf;">
+          <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#0a1430;margin-bottom:2px;letter-spacing:-0.02em;">New Quote Request</div>
+          <div style="color:#626c8a;margin-bottom:22px;font-size:13px;">${timestamp}</div>
           <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;width:120px;font-size:13px;">Name</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${name}</td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">Phone</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;"><a href="tel:${phone}" style="color:#2556c9;font-weight:600;">${phone}</a></td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">Email</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${email || '—'}</td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">City</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${city || '—'}</td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">Services</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${(services || []).join(', ') || '—'}</td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">Property</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${propertyType || '—'}</td></tr>
-            <tr><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;font-weight:600;color:#2a2d36;font-size:13px;">Timeline</td><td style="padding:11px 0;border-bottom:1px solid #e8e1cf;color:#0f1115;">${timeline || '—'}</td></tr>
-            <tr><td style="padding:11px 0;font-weight:600;color:#2a2d36;vertical-align:top;font-size:13px;">Details</td><td style="padding:11px 0;color:#0f1115;">${details || '—'}</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #ede5d1;font-weight:600;color:#1e2847;width:120px;font-size:13px;">Name</td><td style="padding:11px 0;border-bottom:1px solid #ede5d1;color:#0a1430;">${name}</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #ede5d1;font-weight:600;color:#1e2847;font-size:13px;">Email</td><td style="padding:11px 0;border-bottom:1px solid #ede5d1;"><a href="mailto:${email}" style="color:#2556c9;font-weight:600;">${email}</a></td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #ede5d1;font-weight:600;color:#1e2847;font-size:13px;">Property</td><td style="padding:11px 0;border-bottom:1px solid #ede5d1;color:#0a1430;">${propertyType || '—'}</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #ede5d1;font-weight:600;color:#1e2847;font-size:13px;">Stories</td><td style="padding:11px 0;border-bottom:1px solid #ede5d1;color:#0a1430;">${stories || '—'}</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #ede5d1;font-weight:600;color:#1e2847;font-size:13px;">Sq. Footage</td><td style="padding:11px 0;border-bottom:1px solid #ede5d1;color:#0a1430;">${sqft || '—'}</td></tr>
+            <tr><td style="padding:11px 0;font-weight:600;color:#1e2847;vertical-align:top;font-size:13px;">Details</td><td style="padding:11px 0;color:#0a1430;">${details || '—'}</td></tr>
           </table>
-          <p style="margin:22px 0 0;font-size:12px;color:#8a8e9a;">Sent from standardpowerwashing.com</p>
+          <p style="margin:22px 0 0;font-size:12px;color:#8a94b0;">Sent from standardpowerwashing.com</p>
         </div>
       `;
 
@@ -83,7 +81,7 @@ app.post('/api/quote', rateLimit, async (req, res) => {
         body: JSON.stringify({
           from: FROM_EMAIL,
           to: [NOTIFY_EMAIL],
-          subject: `New Quote: ${name} — ${(services || []).join(', ') || 'SPW'}`,
+          subject: `New Quote: ${name}${propertyType ? ' — ' + propertyType : ''}`,
           html: emailHtml
         })
       });

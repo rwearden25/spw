@@ -1,9 +1,10 @@
 # Standard Power Washing — Site
 
-Commercial exterior cleaning site for **Standard Power Washing LLC** (Aledo / Fort Worth, TX). Single-page, mobile-first, served by Express.
+Single-page marketing site for **Standard Power Washing LLC** (Fort Worth, TX). Copy and contact details mirror [standardpowerwashing.com](https://standardpowerwashing.com). Served by Express with a Resend-backed quote endpoint.
 
-- **Live contact:** 682-362-7638 · info@standardpowerwashing.com
-- **Tech:** single-file `index.html` + Express for the `/api/quote` endpoint and Resend email delivery.
+- **Contact:** 682-362-7638 · info@standardpowerwashing.com
+- **Hours:** Mon–Sun, 7:00am – 7:00pm
+- **Service:** Residential · Commercial · Industrial
 
 ## Run locally
 
@@ -29,34 +30,30 @@ Site: http://localhost:3000
 1. Push to this repo.
 2. Railway → **New Project** → GitHub → select repo.
 3. Add env var `RESEND_API_KEY` in Railway.
-4. Add custom domain `standardpowerwashing.com`.
+4. Point `standardpowerwashing.com` at the Railway service.
 
-## Quick customization
+## Quote form fields (match the live site)
+
+- Name *(required)*
+- Email *(required)*
+- Residential or commercial property?
+- Number of building stories
+- Approximate square footage
+- Anything we should know? *(free text)*
+
+Submissions go to `/api/quote`, appended to `leads.log`, and emailed via Resend if `RESEND_API_KEY` is set. Rate limit: 5 / hour / IP.
+
+## Theme tokens
 
 Brand tokens live in `<style>` inside `index.html`:
 
 ```css
 :root {
-  --navy:#1e3a8a;       /* primary brand blue */
-  --royal:#2556c9;      /* accent / CTA */
-  --royal-hi:#3b73e8;
-  --royal-lo:#163f9d;
-  --bg:#faf7f0;         /* paper canvas */
-  --ink:#0f1115;        /* body copy */
+  --navy:#0f2558;        /* royal-blue brand */
+  --cream:#f5efe2;       /* paper canvas */
+  --brass:#b8893a;       /* heritage accent */
+  --ink:#0a1430;         /* text on cream */
 }
 ```
 
-Find/replace targets when rebranding or updating contact info:
-
-| Find                          | What it is        |
-|-------------------------------|-------------------|
-| `Standard Power Washing`      | Company name      |
-| `standardpowerwashing.com`    | Domain            |
-| `682-362-7638`                | Phone             |
-| `6823627638`                  | Phone (digits)    |
-| `info@standardpowerwashing.com` | Email           |
-| `Aledo`                       | City              |
-
-## Lead fallback
-
-If `RESEND_API_KEY` is unset, every submission is appended to `leads.log` at the project root. Server logs also print each request. Rate limit: 5 requests / hour / IP.
+Aesthetic: **Navy Heritage** — royal-blue brand-first canvas with warm cream content bands and brass heritage accents. Fraunces (display) + Inter Tight (UI) typography. Inline SVG icons matching Lucide/Feather (the set `react-icons` ships as `lu*`/`fi*`).
