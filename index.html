@@ -260,6 +260,34 @@
         outline: 2px solid #b0c0d6; outline-offset: 2px;
       }
 
+      /* Estimator range slider — custom thumb/track so it doesn't look like the OS default */
+      .est-slider {
+        -webkit-appearance: none; appearance: none;
+        width: 100%; height: 6px; background: transparent; cursor: ew-resize;
+      }
+      .est-slider::-webkit-slider-runnable-track {
+        height: 6px; border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.6) var(--p, 50%), rgba(255,255,255,0.1) var(--p, 50%), rgba(255,255,255,0.1) 100%);
+      }
+      .est-slider::-moz-range-track { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.1); }
+      .est-slider::-moz-range-progress { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.6); }
+      .est-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; appearance: none;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: #fff; border: 1px solid rgba(200,220,255,0.4);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.08);
+        margin-top: -8px; cursor: grab;
+        transition: transform .15s;
+      }
+      .est-slider::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
+      .est-slider::-moz-range-thumb {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: #fff; border: 1px solid rgba(200,220,255,0.4);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.4), 0 0 0 4px rgba(255,255,255,0.08);
+        cursor: grab;
+      }
+      .est-slider:focus-visible::-webkit-slider-thumb { outline: 2px solid rgba(200,220,255,0.8); outline-offset: 2px; }
+
       @media (prefers-reduced-motion: reduce) {
         *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
         .rv { opacity:1; transform:none; }
@@ -764,12 +792,145 @@
         )
       );
 
+      // --- Ballpark Estimator ---
+      // NOTE: These per-sqft rates are conservative DFW-market ballparks.
+      // Ross: tune the RATES / MULT / FLOOR table below to match your actual
+      // pricing before relying on this for hard numbers. Output is always
+      // presented as a "ballpark" range, never a commitment.
+      const Estimator = () => {
+        const [svc, setSvc] = useState('house');
+        const [sqft, setSqft] = useState(1500);
+        const [prop, setProp] = useState('Residential');
+
+        const RATES = {
+          house:      { label: 'House Wash',         detail: 'Siding · Eaves · Gutters', min: 0.18, max: 0.32, icon: LuHome },
+          concrete:   { label: 'Concrete',           detail: 'Driveways · Patios · Sidewalks', min: 0.12, max: 0.22, icon: LuSquare },
+          roof:       { label: 'Roof',               detail: 'Soft-wash · Algae removal', min: 0.25, max: 0.45, icon: LuSun },
+          commercial: { label: 'Commercial',         detail: 'Storefronts · Drive-thrus · Fleets', min: 0.08, max: 0.18, icon: LuShield }
+        };
+        const MULT = { Residential: 1.0, Commercial: 0.92, Industrial: 0.85 };
+        const FLOOR = 150;
+
+        const r = RATES[svc];
+        const m = MULT[prop] || 1;
+        const roundTo25 = (n) => Math.round(n / 25) * 25;
+        const lo = Math.max(FLOOR, roundTo25(sqft * r.min * m));
+        const hi = Math.max(FLOOR + 75, roundTo25(sqft * r.max * m));
+
+        const goToForm = () => {
+          window.dispatchEvent(new CustomEvent('spw:prefill', {
+            detail: {
+              propertyType: prop,
+              sqft: String(sqft),
+              details: `Estimator inquiry: ${r.label.toLowerCase()}, approximately ${sqft.toLocaleString()} sq ft, ${prop.toLowerCase()} property. Ballpark showed $${lo}–$${hi}.`
+            }
+          }));
+          const t = document.getElementById('quote');
+          if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 72, behavior: 'smooth' });
+        };
+
+        const chip = (active) =>
+          'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[0.8rem] font-semibold transition-all border ' +
+          (active ? 'bg-white text-[#0d1420] border-white shadow-[0_6px_20px_-6px_rgba(200,220,240,0.45)]'
+                  : 'bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:border-white/30');
+
+        return h('section', { id: 'estimator', className: 'relative py-16 sm:py-20 border-t hairline' },
+          h('div', { className: 'max-w-3xl mx-auto px-4 sm:px-6' },
+            h('div', { className: 'rv spot text-center max-w-2xl mx-auto mb-8' },
+              h(Label, { className: 'justify-center' }, 'Ballpark In 10 Seconds'),
+              h('h2', {
+                className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-3',
+                style: { fontSize: 'clamp(1.85rem, 5vw, 2.75rem)' }
+              },
+                'Price a project ', h('span', { className: 'text-steel italic' }, 'right now.')
+              ),
+              h('p', { className: 'text-white/70 leading-relaxed text-[0.95rem]' },
+                "Pick a service, a rough size, and we'll show you a ballpark range. Final quote comes after we see the job."
+              )
+            ),
+            h('div', { className: 'rv card-glass border hairline rounded-2xl p-5 sm:p-7' },
+              // 1) Service chips
+              h('div', { className: 'mb-5' },
+                h('div', { className: 'font-label text-[0.68rem] uppercase font-bold tracking-[0.14em] text-steel mb-3' }, '1  ·  What needs cleaning?'),
+                h('div', { className: 'flex flex-wrap gap-2' },
+                  Object.keys(RATES).map((k) => h('button', {
+                    key: k, type: 'button', onClick: () => setSvc(k),
+                    className: chip(svc === k)
+                  },
+                    h(RATES[k].icon, { className: 'text-sm opacity-80' }),
+                    RATES[k].label
+                  ))
+                ),
+                h('div', { className: 'text-steel text-[0.78rem] mt-2 font-light' }, r.detail)
+              ),
+              // 2) Property type chips
+              h('div', { className: 'mb-5' },
+                h('div', { className: 'font-label text-[0.68rem] uppercase font-bold tracking-[0.14em] text-steel mb-3' }, '2  ·  Property type'),
+                h('div', { className: 'flex flex-wrap gap-2' },
+                  ['Residential', 'Commercial', 'Industrial'].map((p) => h('button', {
+                    key: p, type: 'button', onClick: () => setProp(p),
+                    className: chip(prop === p)
+                  }, p))
+                )
+              ),
+              // 3) Size slider
+              h('div', { className: 'mb-6' },
+                h('div', { className: 'flex items-baseline justify-between mb-3' },
+                  h('div', { className: 'font-label text-[0.68rem] uppercase font-bold tracking-[0.14em] text-steel' }, '3  ·  Approximate size'),
+                  h('div', { className: 'font-display text-white font-semibold text-[1.15rem] tabular-nums' },
+                    sqft.toLocaleString(), h('span', { className: 'text-steel text-[0.82rem] font-normal ml-1' }, 'sq ft')
+                  )
+                ),
+                h('input', {
+                  type: 'range', min: 200, max: 8000, step: 100,
+                  value: sqft, onChange: (e) => setSqft(+e.target.value),
+                  'aria-label': 'Approximate square footage',
+                  className: 'est-slider w-full',
+                  style: { '--p': (((sqft - 200) / (8000 - 200)) * 100).toFixed(1) + '%' }
+                }),
+                h('div', { className: 'flex justify-between text-[0.68rem] text-white/45 mt-1.5 font-label uppercase tracking-wider' },
+                  h('span', null, '200'), h('span', null, '8,000+')
+                )
+              ),
+              // Output
+              h('div', { className: 'rounded-xl border border-white/20 bg-gradient-to-br from-white/10 to-white/[0.03] px-5 py-5 relative overflow-hidden' },
+                h('div', { className: 'absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl', style: { background: 'rgba(170,210,245,0.25)' } }),
+                h('div', { className: 'relative' },
+                  h('div', { className: 'font-label text-[0.66rem] uppercase font-bold tracking-[0.2em] text-steel mb-1' }, 'Ballpark Range'),
+                  h('div', { className: 'flex items-baseline gap-2 mb-1' },
+                    h('div', { className: 'font-display text-white font-semibold tabular-nums', style: { fontSize: 'clamp(2rem, 6vw, 2.85rem)', lineHeight: 1 } },
+                      '$', lo.toLocaleString(), h('span', { className: 'text-steel mx-2' }, '–'), '$', hi.toLocaleString()
+                    )
+                  ),
+                  h('div', { className: 'text-white/55 text-[0.82rem] font-light' },
+                    'Ballpark only · final quote based on a site walk-through or photos'
+                  )
+                )
+              ),
+              h('button', {
+                type: 'button', onClick: goToForm,
+                className: 'w-full mt-5 h-14 rounded-md btn-primary font-label font-bold text-[0.92rem] uppercase tracking-wide transition flex items-center justify-center gap-2'
+              },
+                'Get a Detailed Quote', h(FaArrowRight, { className: 'text-sm' })
+              )
+            )
+          )
+        );
+      };
+
       // --- Quote form ---
       const Quote = () => {
         const [state, setState] = useState({ name: '', email: '', propertyType: '', stories: '', sqft: '', details: '' });
         const [err, setErr] = useState({});
         const [sending, setSending] = useState(false);
         const [done, setDone] = useState(false);
+
+        // Estimator can prefill form fields via a CustomEvent
+        useEffect(() => {
+          const handler = (e) => setState((s) => ({ ...s, ...e.detail }));
+          window.addEventListener('spw:prefill', handler);
+          return () => window.removeEventListener('spw:prefill', handler);
+        }, []);
 
         const update = (k) => (e) => {
           setState({ ...state, [k]: e.target.value });
@@ -1032,6 +1193,7 @@
           h(NavOverlay, { open, setOpen }),
           h('main', { className: 'grain relative' },
             h(Hero, null),
+            h(Estimator, null),
             h(Services, null),
             h(Work, null),
             h(Benefits, null),
