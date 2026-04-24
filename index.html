@@ -388,12 +388,18 @@
         h('header', { className: 'fixed inset-x-0 top-0 z-50 transition-all duration-300 ' + (scrolled ? 'nav-blur border-b hairline' : 'bg-transparent border-b border-transparent') },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3' },
             h('a', { href: '#home', className: 'flex items-center gap-3 min-w-0 py-1', 'aria-label': 'Standard Power Washing — Home' },
-              h('div', { className: 'logo-glow shrink-0 rounded-full bg-white p-1.5 ring-1 ring-white/40 shadow-[0_4px_14px_rgba(140,180,230,0.35)]' },
-                h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-11 sm:h-12 w-auto object-contain block', loading: 'eager' })
+              h('div', { className: 'logo-glow shrink-0' },
+                h('img', {
+                  src: IMG.logo,
+                  alt: 'Standard Power Washing',
+                  className: 'h-16 sm:h-20 w-auto object-contain block',
+                  style: { filter: 'drop-shadow(0 2px 12px rgba(200,225,250,0.55)) drop-shadow(0 0 1px rgba(255,255,255,0.4))' },
+                  loading: 'eager'
+                })
               ),
               h('div', { className: 'leading-tight min-w-0' },
-                h('div', { className: 'font-display text-white font-semibold text-[0.95rem] sm:text-[1.1rem] tracking-wide leading-tight' }, 'Standard Power Washing'),
-                h('div', { className: 'font-label text-[0.6rem] sm:text-[0.66rem] text-steel uppercase tracking-[0.18em] font-semibold mt-0.5' }, 'Fort Worth · Texas')
+                h('div', { className: 'font-display text-white font-semibold text-[1rem] sm:text-[1.2rem] tracking-wide leading-tight' }, 'Standard Power Washing'),
+                h('div', { className: 'font-label text-[0.6rem] sm:text-[0.68rem] text-steel uppercase tracking-[0.18em] font-semibold mt-0.5' }, 'Fort Worth · Texas')
               )
             ),
             h('div', { className: 'flex items-center gap-2' },
@@ -898,10 +904,15 @@
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-[1.5fr_1fr_1fr] gap-8' },
             h('div', null,
               h('div', { className: 'mb-5' },
-                h('div', { className: 'logo-glow inline-block mb-3 rounded-full bg-white p-2 ring-1 ring-white/30' },
-                  h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-14 w-auto object-contain block' })
+                h('div', { className: 'logo-glow inline-block mb-3' },
+                  h('img', {
+                    src: IMG.logo,
+                    alt: 'Standard Power Washing',
+                    className: 'h-20 w-auto object-contain block',
+                    style: { filter: 'drop-shadow(0 2px 14px rgba(200,225,250,0.5)) drop-shadow(0 0 1px rgba(255,255,255,0.35))' }
+                  })
                 ),
-                h('div', { className: 'font-display text-white font-semibold text-lg tracking-wide leading-tight mb-1' }, 'Standard Power Washing'),
+                h('div', { className: 'font-display text-white font-semibold text-xl tracking-wide leading-tight mb-1' }, 'Standard Power Washing'),
                 h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.22em] font-semibold' }, 'Fort Worth · Texas · Fully Insured')
               ),
               h('p', { className: 'text-white/65 text-sm leading-relaxed max-w-sm' },
