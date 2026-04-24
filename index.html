@@ -336,54 +336,18 @@
 
       // --- Services (verbatim copy from standardpowerwashing.com) ---
       const SERVICES = [
-        {
-          id: 'patio',
-          icon: LuSquare,
-          title: 'Patio Cleaning',
-          tag: 'Concrete · Brick · Stone',
-          img: IMG.work3,
-          copy: "We specialize in cleaning all types of patio surfaces, including concrete, brick, and stone. Our team uses powerful pressure washing equipment and specialized solutions to remove dirt, grime, and stains from your patio surfaces."
-        },
-        {
-          id: 'sidewalk',
-          icon: LuWaves,
-          title: 'Sidewalk Cleaning',
-          tag: 'Safe & Welcoming',
-          img: IMG.work4,
-          copy: "Our team can help keep your sidewalks looking clean and new. We use powerful pressure washing equipment to remove dirt, grime, and other debris from your sidewalks, ensuring that they are safe and welcoming for visitors."
-        },
-        {
-          id: 'house',
-          icon: LuHome,
-          title: 'House Washing',
-          tag: 'Eco-Friendly Solutions',
-          img: IMG.house,
-          copy: "We can help keep your house looking clean and new. Our team uses powerful pressure washing equipment and eco-friendly solutions to remove dirt, grime, and other debris from your home's exterior, ensuring that it looks its best."
-        },
-        {
-          id: 'pool',
-          icon: LuDroplets,
-          title: 'Pool Deck Cleaning',
-          tag: 'Safe & Welcoming',
-          img: IMG.work5,
-          copy: "Our team can help keep your pool deck safe and clean. We use powerful pressure washing equipment and specialized solutions to remove dirt, grime, and other debris from your pool deck, ensuring that it is safe and welcoming for visitors."
-        },
-        {
-          id: 'roof',
-          icon: LuSun,
-          title: 'Roof Cleaning',
-          tag: 'Moss · Algae · Stains',
-          img: IMG.work6,
-          copy: "We offer professional roof cleaning services. Our team uses specialized equipment and solutions to remove dirt, grime, moss, algae, and stains from your roof — improving its appearance and lifespan."
-        },
-        {
-          id: 'heavy',
-          icon: LuTruck,
-          title: 'Heavy Equipment Cleaning',
-          tag: 'Businesses of All Sizes',
-          img: IMG.work7,
-          copy: "We offer heavy equipment cleaning services for businesses of all sizes. Our team can clean all types of heavy equipment, including bulldozers, excavators, and more. We use powerful pressure washing equipment and solutions to ensure that your equipment is clean and ready for use."
-        }
+        { id: 'patio',    icon: LuSquare,   title: 'Patio Cleaning',           tag: 'Concrete · Brick · Stone',
+          copy: "We specialize in cleaning all types of patio surfaces, including concrete, brick, and stone. Our team uses powerful pressure washing equipment and specialized solutions to remove dirt, grime, and stains from your patio surfaces." },
+        { id: 'sidewalk', icon: LuWaves,    title: 'Sidewalk Cleaning',        tag: 'Safe & Welcoming',
+          copy: "Our team can help keep your sidewalks looking clean and new. We use powerful pressure washing equipment to remove dirt, grime, and other debris from your sidewalks, ensuring that they are safe and welcoming for visitors." },
+        { id: 'house',    icon: LuHome,     title: 'House Washing',            tag: 'Eco-Friendly Solutions',
+          copy: "We can help keep your house looking clean and new. Our team uses powerful pressure washing equipment and eco-friendly solutions to remove dirt, grime, and other debris from your home's exterior, ensuring that it looks its best." },
+        { id: 'pool',     icon: LuDroplets, title: 'Pool Deck Cleaning',       tag: 'Safe & Welcoming',
+          copy: "Our team can help keep your pool deck safe and clean. We use powerful pressure washing equipment and specialized solutions to remove dirt, grime, and other debris from your pool deck, ensuring that it is safe and welcoming for visitors." },
+        { id: 'roof',     icon: LuSun,      title: 'Roof Cleaning',            tag: 'Moss · Algae · Stains',
+          copy: "We offer professional roof cleaning services. Our team uses specialized equipment and solutions to remove dirt, grime, moss, algae, and stains from your roof — improving its appearance and lifespan." },
+        { id: 'heavy',    icon: LuTruck,    title: 'Heavy Equipment Cleaning', tag: 'Businesses of All Sizes',
+          copy: "We offer heavy equipment cleaning services for businesses of all sizes. Our team can clean all types of heavy equipment, including bulldozers, excavators, and more. We use powerful pressure washing equipment and solutions to ensure that your equipment is clean and ready for use." }
       ];
 
       const ALSO = ['Commercial Pressure Washing', 'Graffiti Removal', 'Deck & Fence Cleaning', 'Paths, Lots & Delivery Areas'];
@@ -548,30 +512,27 @@
             h('div', { className: 'grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3' },
               SERVICES.map((s, i) => {
                 const isOpen = open === s.id;
-                return h('div', {
+                return h('button', {
                   key: s.id,
-                  className: 'rv zoomable card-glass border hairline rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:border-white/25 ' + (isOpen ? 'border-white/30' : ''),
+                  type: 'button',
+                  'aria-expanded': isOpen,
+                  className: 'rv card-glass border hairline rounded-2xl text-left p-5 sm:p-6 cursor-pointer transition-all duration-300 focus:outline-none focus-visible:border-white/40 ' + (isOpen ? 'border-white/30' : ''),
                   style: { transitionDelay: (0.04 * (i % 3)) + 's' },
                   onClick: () => setOpen(isOpen ? null : s.id)
                 },
-                  h('div', { className: 'aspect-[4/3] overflow-hidden bg-black/40' },
-                    h('img', { src: s.img, alt: s.title, loading: 'lazy', className: 'w-full h-full object-cover' })
-                  ),
-                  h('div', { className: 'p-5' },
-                    h('div', { className: 'flex items-start justify-between gap-3 mb-2' },
-                      h('div', { className: 'flex items-center gap-2.5 min-w-0' },
-                        h('span', { className: 'icon-spring w-9 h-9 rounded-lg border hairline-2 flex items-center justify-center text-steel flex-shrink-0 bg-white/10' },
-                          h(s.icon, { className: 'text-base' })
-                        ),
-                        h('div', { className: 'font-label text-[0.62rem] uppercase font-bold text-steel tracking-[0.15em]' }, s.tag)
-                      ),
-                      h('span', { className: 'w-8 h-8 rounded-full border hairline-2 flex items-center justify-center text-white/70 flex-shrink-0 transition-transform ' + (isOpen ? 'rotate-180' : '') },
-                        h(LuChevronDown, { className: 'text-sm' })
-                      )
+                  h('div', { className: 'flex items-start gap-3.5 mb-3' },
+                    h('span', { className: 'icon-spring w-12 h-12 rounded-xl border hairline-2 flex items-center justify-center text-white bg-white/10 flex-shrink-0' },
+                      h(s.icon, { className: 'text-xl' })
                     ),
-                    h('h3', { className: 'font-display text-white text-lg font-semibold leading-tight tracking-tight mb-2' }, s.title),
-                    h('p', { className: 'text-white/70 text-[0.88rem] leading-relaxed ' + (isOpen ? '' : 'line-clamp-2') }, s.copy)
-                  )
+                    h('div', { className: 'flex-1 min-w-0' },
+                      h('div', { className: 'font-label text-[0.62rem] uppercase font-bold text-steel tracking-[0.15em] mb-1' }, s.tag),
+                      h('h3', { className: 'font-display text-white text-lg sm:text-xl font-semibold leading-tight tracking-tight' }, s.title)
+                    ),
+                    h('span', { className: 'w-8 h-8 rounded-full border hairline-2 flex items-center justify-center text-white/70 flex-shrink-0 transition-transform duration-300 ' + (isOpen ? 'rotate-180 bg-white/10' : '') },
+                      h(LuChevronDown, { className: 'text-sm' })
+                    )
+                  ),
+                  h('p', { className: 'text-white/75 text-[0.92rem] leading-relaxed transition-all ' + (isOpen ? '' : 'line-clamp-2') }, s.copy)
                 );
               })
             ),
@@ -588,17 +549,17 @@
         );
       };
 
-      // --- Work / Gallery (real SPW photos) ---
+      // --- Work / Gallery (real SPW photos, neutral labels) ---
       const Work = () => {
         const imgs = [
-          { src: IMG.work1, tag: 'Patio' },
-          { src: IMG.work2, tag: 'Exterior' },
-          { src: IMG.work3, tag: 'Driveway' },
-          { src: IMG.work4, tag: 'Concrete' },
-          { src: IMG.work5, tag: 'Surface' },
-          { src: IMG.work6, tag: 'Roof' },
-          { src: IMG.work7, tag: 'Details' },
-          { src: IMG.house, tag: 'House' }
+          { src: IMG.work1, tag: 'No. 01' },
+          { src: IMG.work2, tag: 'No. 02' },
+          { src: IMG.work3, tag: 'No. 03' },
+          { src: IMG.work4, tag: 'No. 04' },
+          { src: IMG.work5, tag: 'No. 05' },
+          { src: IMG.work6, tag: 'No. 06' },
+          { src: IMG.work7, tag: 'No. 07' },
+          { src: IMG.house, tag: 'No. 08' }
         ];
         return h('section', { id: 'work', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
@@ -613,8 +574,9 @@
             ),
             h('div', { className: 'rv grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3' },
               imgs.map((x, i) => h('div', { key: i, className: 'zoomable relative overflow-hidden rounded-xl border hairline aspect-square bg-black/40' },
-                h('img', { src: x.src, alt: 'Standard Power Washing work — ' + x.tag, loading: 'lazy', className: 'w-full h-full object-cover' }),
-                h('span', { className: 'absolute top-2.5 left-2.5 font-label text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/90 bg-black/55 backdrop-blur px-2 py-1 rounded-md border hairline' }, x.tag)
+                h('img', { src: x.src, alt: 'Standard Power Washing work ' + x.tag, loading: 'lazy', className: 'w-full h-full object-cover' }),
+                h('span', { className: 'absolute top-2.5 left-2.5 font-label text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white bg-black/60 backdrop-blur px-2 py-1 rounded-md border hairline' }, x.tag),
+                h('span', { className: 'absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none' })
               ))
             )
           )
