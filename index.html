@@ -548,8 +548,16 @@
         );
       };
 
-      // --- Before/After compare slider ---
-      // Each image is a pre-composed before+after; split = 'v' (left/right) or 'h' (top/bottom)
+      // --- Before/After compare slider (true reveal) ---
+      // Each source image is a pre-composed before+after.
+      //   split = 'v'  -> before on LEFT,  after on RIGHT
+      //   split = 'h'  -> before on TOP,   after on BOTTOM
+      // We render two layers, each using the composite as a background with
+      // background-size:200% 200% so only one half ends up inside the square
+      // viewport (centered, undistorted). Then clip-path on the "before" layer
+      // reveals it progressively as the slider moves toward that side:
+      //   pos=0   -> show 100% after   (slider at before-edge)
+      //   pos=100 -> show 100% before  (slider at after-edge)
       const Compare = ({ src, alt = '', split = 'v' }) => {
         const [pos, setPos] = useState(50);
         const [dragging, setDragging] = useState(false);
@@ -563,11 +571,11 @@
           setPos(Math.max(0, Math.min(100, p)));
         };
         const onDown = (e) => { setDragging(true); const t = e.touches ? e.touches[0] : e; move(t.clientX, t.clientY); };
-        const onMove = (e) => { if (!dragging) return; e.preventDefault(); const t = e.touches ? e.touches[0] : e; move(t.clientX, t.clientY); };
-        const onUp = () => setDragging(false);
 
         useEffect(() => {
           if (!dragging) return;
+          const onMove = (e) => { e.preventDefault(); const t = e.touches ? e.touches[0] : e; if (t) move(t.clientX, t.clientY); };
+          const onUp = () => setDragging(false);
           window.addEventListener('mousemove', onMove);
           window.addEventListener('mouseup', onUp);
           window.addEventListener('touchmove', onMove, { passive: false });
@@ -580,42 +588,59 @@
           };
         }, [dragging]);
 
+        // Layer styles — bg-size 200% 200% means the full composite is rendered
+        // at 2x container size, so positioning center-edge shows only one half
+        // of the original image, cropped square and centered.
+        const afterBg = {
+          backgroundImage: 'url(' + src + ')',
+          backgroundSize: '200% 200%',
+          backgroundPosition: isV ? '100% 50%' : '50% 100%',
+          backgroundRepeat: 'no-repeat'
+        };
+        const beforeBg = {
+          backgroundImage: 'url(' + src + ')',
+          backgroundSize: '200% 200%',
+          backgroundPosition: isV ? '0% 50%'   : '50% 0%',
+          backgroundRepeat: 'no-repeat',
+          clipPath: isV ? 'inset(0 ' + (100 - pos) + '% 0 0)'
+                        : 'inset(0 0 ' + (100 - pos) + '% 0)'
+        };
+
         const labelBase = 'absolute font-label text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md border hairline pointer-events-none transition-opacity duration-200';
 
         return h('div', {
           ref,
-          className: 'relative aspect-square overflow-hidden rounded-xl border hairline-2 bg-black/40 select-none group ' + (dragging ? '' : ''),
+          className: 'relative aspect-square overflow-hidden rounded-xl border hairline-2 bg-black/40 select-none group',
           style: { touchAction: 'none', cursor: isV ? 'ew-resize' : 'ns-resize' },
           onMouseDown: onDown,
-          onTouchStart: onDown
+          onTouchStart: onDown,
+          role: 'img',
+          'aria-label': alt
         },
-          h('img', {
-            src, alt, loading: 'lazy', draggable: false,
-            className: 'absolute inset-0 w-full h-full object-cover pointer-events-none'
-          }),
-          // Before label
+          // AFTER layer (base)
+          h('div', { className: 'absolute inset-0', style: afterBg, 'aria-hidden': 'true' }),
+          // BEFORE layer (clipped reveal)
+          h('div', { className: 'absolute inset-0', style: beforeBg, 'aria-hidden': 'true' }),
+          // Before label (top-left always)
+          h('span', { className: labelBase + ' top-2.5 left-2.5', style: { opacity: pos > 8 ? 1 : 0.35 } }, 'Before'),
+          // After label (opposite corner depending on split)
           h('span', {
-            className: labelBase + ' ' + (isV ? 'top-2.5 left-2.5' : 'top-2.5 left-2.5'),
-            style: { opacity: pos > 10 ? 1 : 0.35 }
-          }, 'Before'),
-          // After label
-          h('span', {
-            className: labelBase + ' ' + (isV ? 'top-2.5 right-2.5' : 'bottom-2.5 left-2.5'),
-            style: { opacity: pos < 90 ? 1 : 0.35 }
+            className: labelBase + ' ' + (isV ? 'top-2.5 right-2.5' : 'bottom-2.5 right-2.5'),
+            style: { opacity: pos < 92 ? 1 : 0.35 }
           }, 'After'),
           // Slider line
           h('div', {
             className: 'absolute bg-white pointer-events-none',
             style: isV
-              ? { top: 0, bottom: 0, left: `${pos}%`, width: '2.5px', transform: 'translateX(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
-              : { left: 0, right: 0, top: `${pos}%`, height: '2.5px', transform: 'translateY(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
+              ? { top: 0, bottom: 0, left: pos + '%', width: '2.5px', transform: 'translateX(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
+              : { left: 0, right: 0, top: pos + '%', height: '2.5px', transform: 'translateY(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
           }),
           // Handle knob
           h('div', {
-            className: 'absolute bg-white rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_0_4px_rgba(255,255,255,0.18)] pointer-events-none transition-transform duration-150 ' + (dragging ? 'scale-110' : 'group-hover:scale-105'),
+            className: 'absolute bg-white rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_0_4px_rgba(255,255,255,0.18)] pointer-events-none transition-transform duration-150',
             style: isV
-              ? { top: '50%', left: `${pos}%`, width: '38px', height: '38px', transform: 'translate(-50%, -50%)' + (dragging ? ' scale(1.1)' : '') }
-              : { left: '50%', top: `${pos}%`, width: '38px', height: '38px', transform: 'translate(-50%, -50%)' + (dragging ? ' scale(1.1)' : '') }
+              ? { top: '50%', left: pos + '%', width: '40px', height: '40px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.12)' : '') }
+              : { left: '50%', top: pos + '%', width: '40px', height: '40px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.12)' : '') }
           },
             h('svg', { viewBox: '0 0 24 24', width: 14, height: 14, fill: '#0f172a', style: { transform: isV ? 'none' : 'rotate(90deg)' } },
               h('path', { d: 'M8 5l-5 7 5 7M16 5l5 7-5 7' })
