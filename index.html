@@ -29,52 +29,111 @@
       html { scroll-behavior: smooth; }
       body {
         font-family: 'Lato', system-ui, -apple-system, sans-serif;
-        background: #0b1018;
+        background: #0d1420;
         color: #e6edf5;
         -webkit-font-smoothing: antialiased;
       }
       .font-display { font-family: 'Cinzel', serif; letter-spacing: 0.02em; }
       .font-label { font-family: 'Cabin', sans-serif; letter-spacing: 0.06em; }
 
-      /* Water-lit near-black canvas — cool radial glow to suggest mist / pressure spray */
+      /* Water-lit canvas — brighter cool bloom to suggest mist / pressure spray */
       .bg-hydro {
         background:
-          radial-gradient(1200px 700px at 15% -10%, rgba(94, 120, 170, 0.22), transparent 60%),
-          radial-gradient(900px 600px at 92% 14%, rgba(130, 170, 220, 0.14), transparent 60%),
-          radial-gradient(1000px 800px at 60% 110%, rgba(60, 90, 135, 0.18), transparent 65%),
-          linear-gradient(180deg, #0a0f17 0%, #10161f 42%, #0b1018 100%);
+          radial-gradient(1300px 760px at 15% -10%, rgba(130, 170, 220, 0.30), transparent 62%),
+          radial-gradient(1000px 640px at 92% 14%, rgba(160, 200, 240, 0.22), transparent 60%),
+          radial-gradient(1100px 820px at 60% 110%, rgba(90, 130, 180, 0.24), transparent 65%),
+          linear-gradient(180deg, #0f1724 0%, #151f2e 42%, #0d1420 100%);
       }
 
+      /* Elevated glass cards — rim-lit top edge, deeper outer shadow */
       .card-glass {
-        background: linear-gradient(180deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.015) 100%);
-        backdrop-filter: blur(6px);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 55%, rgba(255,255,255,0.015) 100%);
+        backdrop-filter: blur(10px) saturate(130%);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.14),
+          inset 0 0 0 1px rgba(255,255,255,0.02),
+          0 14px 40px -14px rgba(0,0,0,0.55),
+          0 2px 6px rgba(0,0,0,0.25);
       }
-      .hairline { border-color: rgba(200, 220, 255, 0.09); }
-      .hairline-2 { border-color: rgba(200, 220, 255, 0.16); }
-      .text-steel { color: #b0c0d6; }
-      .text-slate-soft { color: #7f8ea8; }
+      .card-glass:hover {
+        background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 55%, rgba(255,255,255,0.02) 100%);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.22),
+          inset 0 0 0 1px rgba(255,255,255,0.04),
+          0 22px 52px -14px rgba(0,0,0,0.6),
+          0 2px 6px rgba(0,0,0,0.3),
+          0 0 40px -10px rgba(140,180,230,0.18);
+      }
+
+      .hairline { border-color: rgba(200, 220, 255, 0.14); }
+      .hairline-2 { border-color: rgba(200, 220, 255, 0.26); }
+      .text-steel { color: #c0cfe2; }
+      .text-slate-soft { color: #8fa0ba; }
 
       .grain::before {
         content: "";
-        position: absolute; inset: 0; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
+        position: absolute; inset: 0; pointer-events: none; opacity: 0.045; mix-blend-mode: overlay;
         background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
       }
 
       .divider-h {
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(200,220,255,0.22), transparent);
+        background: linear-gradient(90deg, transparent, rgba(200,220,255,0.35), transparent);
       }
 
+      /* Polished-steel CTA — top highlight + inner shadow + soft glow */
       .btn-primary {
-        background: linear-gradient(180deg, #ffffff 0%, #d3dbe8 100%);
-        color: #0b1018;
-        border: 1px solid rgba(255,255,255,0.25);
+        background: linear-gradient(180deg, #ffffff 0%, #e4ebf4 48%, #c4d0e0 100%);
+        color: #0d1420;
+        border: 1px solid rgba(255,255,255,0.45);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.9),
+          inset 0 -1px 0 rgba(80,100,130,0.25),
+          0 10px 28px -10px rgba(180,200,230,0.45),
+          0 2px 6px rgba(0,0,0,0.2);
       }
-      .btn-primary:hover { filter: brightness(1.04); transform: translateY(-1px); }
-      .btn-ghost { border: 1px solid rgba(200,220,255,0.22); color: #e6edf5; }
-      .btn-ghost:hover { background: rgba(200,220,255,0.06); border-color: rgba(200,220,255,0.4); }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.95),
+          inset 0 -1px 0 rgba(80,100,130,0.25),
+          0 16px 36px -10px rgba(200,220,240,0.55),
+          0 2px 6px rgba(0,0,0,0.2);
+      }
 
-      .nav-blur { backdrop-filter: saturate(150%) blur(14px); background: rgba(11, 16, 24, 0.72); }
+      .btn-ghost {
+        border: 1px solid rgba(200,220,255,0.3);
+        color: #e6edf5;
+        background: rgba(255,255,255,0.04);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.09);
+      }
+      .btn-ghost:hover {
+        background: rgba(200,220,255,0.09);
+        border-color: rgba(200,220,255,0.5);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 24px -10px rgba(140,180,230,0.2);
+      }
+
+      .nav-blur { backdrop-filter: saturate(150%) blur(16px); background: rgba(13, 20, 32, 0.78); }
+
+      /* Logo glow halo */
+      .logo-glow { position: relative; }
+      .logo-glow::before {
+        content: '';
+        position: absolute; inset: -8px; border-radius: 14px;
+        background: radial-gradient(circle, rgba(140,180,230,0.35), transparent 70%);
+        filter: blur(10px); pointer-events: none; z-index: -1;
+      }
+
+      /* Section spotlight */
+      .spot { position: relative; }
+      .spot::before {
+        content: '';
+        position: absolute; top: -8%; left: 0; right: 0; height: 60%;
+        background: radial-gradient(ellipse 60% 80% at 30% 50%, rgba(120,170,230,0.12), transparent 65%);
+        filter: blur(40px); pointer-events: none; z-index: 0;
+      }
+      .spot > * { position: relative; z-index: 1; }
 
       /* Hydro mist drift — cool counterpart to Burdys' smoke */
       @keyframes mist {
@@ -111,11 +170,12 @@
       .zoomable img { transition: transform 0.7s ease; }
       .zoomable:hover img { transform: scale(1.05); }
 
-      /* Hero photo overlay */
+      /* Hero photo overlay — lighter so photo reads through */
       .hero-photo::after {
         content: ''; position: absolute; inset: 0;
-        background: linear-gradient(180deg, rgba(11,16,24,0.55) 0%, rgba(11,16,24,0.75) 55%, rgba(11,16,24,0.95) 100%),
-                    linear-gradient(90deg, rgba(11,16,24,0.6) 0%, rgba(11,16,24,0) 50%);
+        background:
+          linear-gradient(180deg, rgba(13,20,32,0.35) 0%, rgba(13,20,32,0.62) 55%, rgba(13,20,32,0.92) 100%),
+          linear-gradient(90deg, rgba(13,20,32,0.5) 0%, rgba(13,20,32,0) 55%);
       }
 
       /* Slide-down for mobile nav */
@@ -295,11 +355,13 @@
       const Header = ({ open, setOpen, scrolled }) => (
         h('header', { className: 'fixed inset-x-0 top-0 z-50 transition-all duration-300 ' + (scrolled ? 'nav-blur border-b hairline' : 'bg-transparent border-b border-transparent') },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3' },
-            h('a', { href: '#home', className: 'flex items-center gap-2.5 min-w-0' },
-              h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-10 w-10 rounded-md bg-white/5 p-1 border hairline object-contain', loading: 'eager' }),
-              h('div', { className: 'leading-tight min-w-0' },
-                h('div', { className: 'font-display text-[0.98rem] font-semibold text-white tracking-wide' }, 'Standard Power Washing'),
-                h('div', { className: 'font-label text-[0.64rem] text-steel uppercase' }, 'Fort Worth, Texas')
+            h('a', { href: '#home', className: 'flex items-center gap-3 min-w-0 py-1', 'aria-label': 'Standard Power Washing — Home' },
+              h('div', { className: 'logo-glow shrink-0' },
+                h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-14 sm:h-16 w-auto object-contain drop-shadow-[0_2px_8px_rgba(140,180,230,0.35)]', loading: 'eager' })
+              ),
+              h('div', { className: 'hidden md:block leading-tight min-w-0 border-l hairline-2 pl-3' },
+                h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.2em] font-semibold' }, 'Fort Worth · Texas'),
+                h('div', { className: 'font-label text-[0.64rem] text-white/55 uppercase tracking-[0.16em] mt-0.5' }, 'Est. Standard Power Washing LLC')
               )
             ),
             h('div', { className: 'flex items-center gap-2' },
@@ -404,7 +466,7 @@
         const [open, setOpen] = useState(null);
         return h('section', { id: 'services', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'rv max-w-2xl mb-12' },
+            h('div', { className: 'rv spot max-w-2xl mb-12' },
               h(Label, null, 'Our Services'),
               h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
                 'Top-quality pressure washing ', h('span', { className: 'text-steel italic' }, 'services.')
@@ -438,7 +500,7 @@
                       )
                     ),
                     h('h3', { className: 'font-display text-white text-lg font-semibold leading-tight tracking-tight mb-2' }, s.title),
-                    h('p', { className: 'text-white/65 text-[0.88rem] leading-relaxed ' + (isOpen ? '' : 'line-clamp-2') }, s.copy)
+                    h('p', { className: 'text-white/70 text-[0.88rem] leading-relaxed ' + (isOpen ? '' : 'line-clamp-2') }, s.copy)
                   )
                 );
               })
@@ -470,12 +532,12 @@
         ];
         return h('section', { id: 'work', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'rv max-w-2xl mb-10' },
+            h('div', { className: 'rv spot max-w-2xl mb-10' },
               h(Label, null, 'Our Work'),
               h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
                 'Rejuvenating ', h('span', { className: 'text-steel italic' }, 'surfaces.')
               ),
-              h('p', { className: 'text-white/70 leading-relaxed' },
+              h('p', { className: 'text-white/75 leading-relaxed' },
                 "From removing stubborn stains and dirt to rejuvenating surfaces, we deliver exceptional results that exceed our customers' expectations."
               )
             ),
@@ -493,12 +555,12 @@
       const Benefits = () => (
         h('section', { id: 'benefits', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'rv max-w-2xl mb-10' },
+            h('div', { className: 'rv spot max-w-2xl mb-10' },
               h(Label, null, 'Benefits'),
               h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
                 'The power of ', h('span', { className: 'text-steel italic' }, 'cleanliness.')
               ),
-              h('p', { className: 'text-white/70 leading-relaxed' },
+              h('p', { className: 'text-white/75 leading-relaxed' },
                 'Pressure washing works on even the most stubborn debris — and does most of it with water alone.'
               )
             ),
@@ -511,7 +573,7 @@
                   h('span', { className: 'font-display text-steel font-semibold text-sm tracking-wider' }, 'No. ' + b.n)
                 ),
                 h('h3', { className: 'font-display text-white text-xl font-semibold leading-tight tracking-tight mb-2' }, b.t),
-                h('p', { className: 'text-white/70 text-[0.94rem] leading-relaxed' }, b.d)
+                h('p', { className: 'text-white/75 text-[0.94rem] leading-relaxed' }, b.d)
               ))
             )
           )
@@ -581,12 +643,12 @@
 
         return h('section', { id: 'quote', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-3xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'rv text-center max-w-xl mx-auto mb-10' },
+            h('div', { className: 'rv spot text-center max-w-xl mx-auto mb-10' },
               h(Label, { className: 'justify-center' }, 'Free Estimate'),
               h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
                 'Request a ', h('span', { className: 'text-steel italic' }, 'free estimate.')
               ),
-              h('p', { className: 'text-white/70 leading-relaxed' },
+              h('p', { className: 'text-white/75 leading-relaxed' },
                 "Tell us a bit about the property and we'll follow up to set up your pressure washing service."
               )
             ),
@@ -652,12 +714,12 @@
       const Contact = () => (
         h('section', { id: 'contact', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'rv max-w-2xl mx-auto text-center mb-10' },
+            h('div', { className: 'rv spot max-w-2xl mx-auto text-center mb-10' },
               h(Label, { className: 'justify-center' }, 'Contact'),
               h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
                 'Get in ', h('span', { className: 'text-steel italic' }, 'touch.')
               ),
-              h('p', { className: 'text-white/70 leading-relaxed' },
+              h('p', { className: 'text-white/75 leading-relaxed' },
                 'Please contact us to set up your pressure washing service or with any questions on our services.'
               )
             ),
@@ -698,14 +760,13 @@
         h('footer', { className: 'relative py-12 pb-28 sm:pb-14 border-t hairline', style: { background: '#070b12' } },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-[1.5fr_1fr_1fr] gap-8' },
             h('div', null,
-              h('div', { className: 'flex items-center gap-3 mb-4' },
-                h('img', { src: IMG.logo, alt: 'SPW', className: 'h-11 w-11 rounded-md bg-white/5 p-1 border hairline object-contain' }),
-                h('div', null,
-                  h('div', { className: 'font-display text-white font-semibold tracking-wide' }, 'Standard Power Washing'),
-                  h('div', { className: 'font-label text-[0.66rem] text-steel uppercase tracking-wider' }, 'Fort Worth, Texas')
-                )
+              h('div', { className: 'mb-5' },
+                h('div', { className: 'logo-glow inline-block mb-3' },
+                  h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-16 w-auto object-contain drop-shadow-[0_2px_8px_rgba(140,180,230,0.3)]' })
+                ),
+                h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.22em] font-semibold' }, 'Fort Worth · Texas')
               ),
-              h('p', { className: 'text-white/55 text-sm leading-relaxed max-w-sm' },
+              h('p', { className: 'text-white/65 text-sm leading-relaxed max-w-sm' },
                 'Professional cleaning services for your home or business. Residential, commercial, and industrial properties.'
               )
             ),
