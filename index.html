@@ -388,12 +388,12 @@
         h('header', { className: 'fixed inset-x-0 top-0 z-50 transition-all duration-300 ' + (scrolled ? 'nav-blur border-b hairline' : 'bg-transparent border-b border-transparent') },
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3' },
             h('a', { href: '#home', className: 'flex items-center gap-3 min-w-0 py-1', 'aria-label': 'Standard Power Washing — Home' },
-              h('div', { className: 'logo-glow shrink-0' },
-                h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-14 sm:h-16 w-auto object-contain drop-shadow-[0_2px_8px_rgba(140,180,230,0.35)]', loading: 'eager' })
+              h('div', { className: 'logo-glow shrink-0 rounded-full bg-white p-1.5 ring-1 ring-white/40 shadow-[0_4px_14px_rgba(140,180,230,0.35)]' },
+                h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-11 sm:h-12 w-auto object-contain block', loading: 'eager' })
               ),
-              h('div', { className: 'hidden md:block leading-tight min-w-0 border-l hairline-2 pl-3' },
-                h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.2em] font-semibold' }, 'Fort Worth · Texas'),
-                h('div', { className: 'font-label text-[0.64rem] text-white/55 uppercase tracking-[0.16em] mt-0.5' }, 'Est. Standard Power Washing LLC')
+              h('div', { className: 'leading-tight min-w-0' },
+                h('div', { className: 'font-display text-white font-semibold text-[0.95rem] sm:text-[1.1rem] tracking-wide leading-tight' }, 'Standard Power Washing'),
+                h('div', { className: 'font-label text-[0.6rem] sm:text-[0.66rem] text-steel uppercase tracking-[0.18em] font-semibold mt-0.5' }, 'Fort Worth · Texas')
               )
             ),
             h('div', { className: 'flex items-center gap-2' },
@@ -431,7 +431,10 @@
               h('br', null),
               h('a', { href: 'mailto:' + EMAIL, className: 'text-white underline underline-offset-2' }, EMAIL),
               h('br', null),
-              'Mon – Sun · 7:00am – 7:00pm'
+              'Mon – Sun · 7:00am – 7:00pm', h('br', null),
+              h('span', { className: 'inline-flex items-center gap-1.5 mt-1 text-white/85' },
+                h(LuShield, { className: 'text-steel' }), 'Fully Insured'
+              )
             )
           )
         );
@@ -473,10 +476,11 @@
                 h(FaPhone, { className: 'text-sm' }), PHONE
               )
             ),
-            h('div', { className: 'grid grid-cols-3 gap-2.5 sm:gap-3 max-w-xl' },
+            h('div', { className: 'grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-2xl' },
               [
                 { icon: LuMapPin, t: 'Fort Worth, TX', d: 'Res · Com · Ind' },
                 { icon: LuClock, t: 'Mon – Sun', d: '7am – 7pm' },
+                { icon: LuShield, t: 'Fully Insured', d: 'Commercial · Residential' },
                 { icon: LuLeaf, t: 'Eco-Friendly', d: 'Water-first' }
               ].map((x, i) => h('div', { key: i, className: 'card-glass border hairline rounded-xl p-3 sm:p-3.5' },
                 h(x.icon, { className: 'text-steel text-lg mb-1.5' }),
@@ -770,7 +774,9 @@
         };
 
         const inputCls = 'w-full h-12 px-3.5 rounded-md bg-white/5 border border-white/15 text-white placeholder-white/35 font-[Lato] text-[0.98rem] focus:border-white/60 focus:bg-white/[0.08] focus:outline-none transition';
-        const selectCls = inputCls + ' appearance-none bg-[url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2712%27%20height=%2712%27%20viewBox=%270%200%2024%2024%27%20fill=%27none%27%20stroke=%27%23b0c0d6%27%20stroke-width=%272%27%3E%3Cpolyline%20points=%276%209%2012%2015%2018%209%27/%3E%3C/svg%3E")] bg-no-repeat bg-[right_1rem_center] pr-9';
+        const selectCls = inputCls + ' appearance-none bg-[url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%2712%27%20height=%2712%27%20viewBox=%270%200%2024%2024%27%20fill=%27none%27%20stroke=%27%23cfdcee%27%20stroke-width=%272%27%3E%3Cpolyline%20points=%276%209%2012%2015%2018%209%27/%3E%3C/svg%3E")] bg-no-repeat bg-[right_1rem_center] pr-9';
+        // Native <option> elements don't honor parent color in all browsers — explicit dark text on white background so they're readable when the dropdown opens.
+        const optStyle = { color: '#0f172a', background: '#ffffff' };
 
         return h('section', { id: 'quote', className: 'relative py-20 sm:py-24 border-t hairline' },
           h('div', { className: 'max-w-3xl mx-auto px-4 sm:px-6' },
@@ -807,16 +813,16 @@
                     h('div', null,
                       h('label', { htmlFor: 'pT', className: 'font-label text-[0.7rem] uppercase font-bold tracking-[0.12em] text-steel block mb-1.5' }, 'Residential or commercial property?'),
                       h('select', { id: 'pT', className: selectCls, value: state.propertyType, onChange: update('propertyType') },
-                        h('option', { value: '' }, 'Select…'),
-                        ['Residential', 'Commercial', 'Industrial'].map((o) => h('option', { key: o }, o))
+                        h('option', { value: '', style: optStyle }, 'Select…'),
+                        ['Residential', 'Commercial', 'Industrial'].map((o) => h('option', { key: o, style: optStyle }, o))
                       )
                     ),
                     h('div', { className: 'grid grid-cols-2 gap-3' },
                       h('div', null,
                         h('label', { htmlFor: 'st', className: 'font-label text-[0.7rem] uppercase font-bold tracking-[0.12em] text-steel block mb-1.5' }, 'Stories'),
                         h('select', { id: 'st', className: selectCls, value: state.stories, onChange: update('stories') },
-                          h('option', { value: '' }, 'Select…'),
-                          ['1', '2', '3', '4+'].map((o) => h('option', { key: o }, o))
+                          h('option', { value: '', style: optStyle }, 'Select…'),
+                          ['1', '2', '3', '4+'].map((o) => h('option', { key: o, style: optStyle }, o))
                         )
                       ),
                       h('div', null,
@@ -892,10 +898,11 @@
           h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-[1.5fr_1fr_1fr] gap-8' },
             h('div', null,
               h('div', { className: 'mb-5' },
-                h('div', { className: 'logo-glow inline-block mb-3' },
-                  h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-16 w-auto object-contain drop-shadow-[0_2px_8px_rgba(140,180,230,0.3)]' })
+                h('div', { className: 'logo-glow inline-block mb-3 rounded-full bg-white p-2 ring-1 ring-white/30' },
+                  h('img', { src: IMG.logo, alt: 'Standard Power Washing', className: 'h-14 w-auto object-contain block' })
                 ),
-                h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.22em] font-semibold' }, 'Fort Worth · Texas')
+                h('div', { className: 'font-display text-white font-semibold text-lg tracking-wide leading-tight mb-1' }, 'Standard Power Washing'),
+                h('div', { className: 'font-label text-[0.68rem] text-steel uppercase tracking-[0.22em] font-semibold' }, 'Fort Worth · Texas · Fully Insured')
               ),
               h('p', { className: 'text-white/65 text-sm leading-relaxed max-w-sm' },
                 'Professional cleaning services for your home or business. Residential, commercial, and industrial properties.'
