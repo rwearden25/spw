@@ -238,12 +238,17 @@
       .zoomable img { transition: transform 0.7s ease; }
       .zoomable:hover img { transform: scale(1.05); }
 
-      /* Hero photo overlay — lighter so photo reads through */
+      /* Hero photo overlay — subtle vignette that still reads the image clearly.
+         Matches the live site: full bleed image, minimal darkening, centered text. */
       .hero-photo::after {
         content: ''; position: absolute; inset: 0;
         background:
-          linear-gradient(180deg, rgba(13,20,32,0.35) 0%, rgba(13,20,32,0.62) 55%, rgba(13,20,32,0.92) 100%),
-          linear-gradient(90deg, rgba(13,20,32,0.5) 0%, rgba(13,20,32,0) 55%);
+          radial-gradient(ellipse 75% 55% at 50% 50%, rgba(13,20,32,0.25), rgba(13,20,32,0.6) 85%),
+          linear-gradient(180deg, rgba(13,20,32,0.35) 0%, rgba(13,20,32,0.15) 45%, rgba(13,20,32,0.85) 100%);
+      }
+      .hero-video {
+        position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+        pointer-events: none;
       }
 
       /* Slide-down for mobile nav */
@@ -319,7 +324,8 @@
       const BASE = 'https://img1.wsimg.com/isteam/ip/93f78982-b83a-41d3-9e29-d59d8d1ff91c/';
       const IMG = {
         logo: BASE + 'File.png/:/rs=h:166,cg:true,m/qt=q:95',
-        heroPhoto: 'https://media.gettyimages.com/id/2229068771/video/landscaper-cleaning-outdoor-patio-and-garden-area-using-pressure-washer.jpg?b=1&s=1200x675&k=20&c=bX8MZ4NjqHJC3bWCF68-_R3_B-I5-Zz1iP_yd2c-qbM=',
+        heroPhoto: 'https://media.gettyimages.com/id/2229068771/video/landscaper-cleaning-outdoor-patio-and-garden-area-using-pressure-washer.jpg?b=1&s=640x640&k=20&c=bX8MZ4NjqHJC3bWCF68-_R3_B-I5-Zz1iP_yd2c-qbM=',
+        heroVideo: 'https://blobby.wsimg.com/getty/videos/2229068771',
         work1: BASE + 'FullSizeRender%205.JPG/:/cr=t:8.09%25,l:0%25,w:100%25,h:83.83%25/rs=w:900,h:675,cg:true',
         work2: BASE + 'IMG_9675.JPG/:/cr=t:0%25,l:12.5%25,w:75%25,h:100%25/rs=w:900,h:1200,cg:true',
         work3: BASE + 'IMG_4542.JPG/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:900,h:900,cg:true',
@@ -446,11 +452,19 @@
         );
       };
 
-      // --- Hero ---
+      // --- Hero (matches live site: full-bleed aerial photo, centered content) ---
       const Hero = () => (
-        h('section', { id: 'home', className: 'relative pt-28 sm:pt-32 pb-20 sm:pb-28 overflow-hidden' },
+        h('section', { id: 'home', className: 'relative pt-24 sm:pt-28 pb-16 sm:pb-24 overflow-hidden flex items-center min-h-[92vh] sm:min-h-[88vh]' },
           h('div', { className: 'absolute inset-0 hero-photo' },
-            h('div', { className: 'bg-layer', style: { backgroundImage: 'url(' + IMG.heroPhoto + ')' } })
+            // Video background (looped, muted) with the Getty still as fallback poster
+            h('video', {
+              className: 'hero-video bg-layer',
+              autoPlay: true, muted: true, loop: true, playsInline: true,
+              preload: 'metadata',
+              poster: IMG.heroPhoto
+            },
+              h('source', { src: IMG.heroVideo, type: 'video/mp4' })
+            )
           ),
           h('div', { className: 'absolute inset-x-0 bottom-0 h-48 pointer-events-none overflow-hidden' },
             h('span', { className: 'mist m1' }),
@@ -458,37 +472,36 @@
             h('span', { className: 'mist m3' }),
             h('span', { className: 'mist m4' })
           ),
-          h('div', { className: 'relative max-w-6xl mx-auto px-4 sm:px-6' },
-            h('div', { className: 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hairline-2 bg-white/5 text-[0.72rem] font-label font-semibold uppercase text-white mb-7' },
+          h('div', { className: 'relative max-w-4xl mx-auto px-4 sm:px-6 w-full text-center' },
+            h('div', { className: 'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hairline-2 bg-black/35 backdrop-blur-sm text-[0.72rem] font-label font-semibold uppercase text-white mb-6' },
               h('span', { className: 'relative w-1.5 h-1.5 rounded-full bg-white pulse-ring' }),
               'Open Today · 7am – 7pm'
             ),
-            h('h1', { className: 'font-display text-white font-semibold leading-[0.98] tracking-tight mb-5 max-w-4xl', style: { fontSize: 'clamp(2.5rem, 8vw, 4.75rem)' } },
-              'Professional ',
-              h('span', { className: 'text-steel italic' }, 'power washing'),
-              h('br', null),
-              'services for your',
-              h('br', null),
-              h('span', { className: 'text-white' }, 'home or '), h('span', { className: 'text-steel italic' }, 'business.')
+            h('h1', {
+              className: 'font-display text-white font-semibold leading-[1.02] tracking-tight mb-4',
+              style: { fontSize: 'clamp(2.25rem, 6.5vw, 4.25rem)', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }
+            },
+              'Standard ', h('span', { className: 'text-steel italic' }, 'Power Washing'), ' LLC'
             ),
-            h('p', { className: 'text-[1.02rem] sm:text-[1.08rem] leading-relaxed text-white/80 max-w-xl mb-7 font-light' },
-              'Residential, commercial, and industrial properties. Our experts, equipped with state-of-the-art technology, deliver exceptional results that exceed our customers’ expectations.'
-            ),
-            h('div', { className: 'flex flex-wrap gap-2.5 mb-10' },
-              h('a', { href: '#quote', className: 'inline-flex items-center gap-2 h-13 px-6 rounded-md btn-primary font-label font-bold text-[0.88rem] uppercase tracking-wide transition', style: { height: '52px' } },
-                'Get a Free Estimate', h(FaArrowRight, { className: 'text-sm' })
-              ),
-              h('a', { href: 'tel:' + PHONE_RAW, className: 'inline-flex items-center gap-2 h-13 px-6 rounded-md btn-ghost font-label font-semibold text-[0.88rem] uppercase tracking-wide transition', style: { height: '52px' } },
-                h(FaPhone, { className: 'text-sm' }), PHONE
+            h('p', {
+              className: 'text-[1.05rem] sm:text-[1.2rem] leading-relaxed text-white/95 max-w-2xl mx-auto mb-8 font-light',
+              style: { textShadow: '0 1px 8px rgba(0,0,0,0.6)' }
+            }, 'Professional power washing services for your home or business.'),
+            h('div', { className: 'flex flex-wrap justify-center gap-2.5 mb-4' },
+              h('a', { href: '#quote', className: 'inline-flex items-center gap-2 h-14 px-7 rounded-md btn-primary font-label font-bold text-[0.92rem] uppercase tracking-wide transition' },
+                'Request a Free Estimate', h(FaArrowRight, { className: 'text-sm' })
               )
             ),
-            h('div', { className: 'grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-2xl' },
+            h('a', { href: 'tel:' + PHONE_RAW, className: 'inline-flex items-center gap-2 text-white font-label font-semibold text-[0.95rem] mb-10 hover:text-steel transition', style: { textShadow: '0 1px 6px rgba(0,0,0,0.7)' } },
+              h(FaPhone, { className: 'text-sm' }), PHONE
+            ),
+            h('div', { className: 'grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-3xl mx-auto' },
               [
                 { icon: LuMapPin, t: 'Fort Worth, TX', d: 'Res · Com · Ind' },
                 { icon: LuClock, t: 'Mon – Sun', d: '7am – 7pm' },
                 { icon: LuShield, t: 'Fully Insured', d: 'Commercial · Residential' },
                 { icon: LuLeaf, t: 'Eco-Friendly', d: 'Water-first' }
-              ].map((x, i) => h('div', { key: i, className: 'card-glass border hairline rounded-xl p-3 sm:p-3.5' },
+              ].map((x, i) => h('div', { key: i, className: 'card-glass border hairline rounded-xl p-3 sm:p-3.5 text-left' },
                 h(x.icon, { className: 'text-steel text-lg mb-1.5' }),
                 h('div', { className: 'text-white font-semibold text-[0.82rem] sm:text-sm leading-tight tracking-tight' }, x.t),
                 h('div', { className: 'text-steel text-[0.68rem] sm:text-[0.72rem] mt-0.5' }, x.d)
