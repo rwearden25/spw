@@ -52,10 +52,9 @@ app.post('/api/quote', rateLimit, async (req, res) => {
 
   const RESEND_KEY = process.env.RESEND_API_KEY;
   const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'info@standardpowerwashing.com';
-  // Default to Resend's sandbox sender so delivery works out-of-the-box
-  // (no DNS setup needed). Override FROM_EMAIL once standardpowerwashing.com
-  // is verified in Resend to send from your own domain.
-  const FROM_EMAIL = process.env.FROM_EMAIL || 'Standard Power Washing <onboarding@resend.dev>';
+  // standardpowerwashing.com is verified in Resend (DKIM + SPF/MX via GoDaddy),
+  // so we can send from a branded address. Override via env if ever needed.
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'Standard Power Washing <quotes@standardpowerwashing.com>';
 
   if (RESEND_KEY) {
     try {
@@ -156,5 +155,5 @@ app.listen(PORT, () => {
     if (!resendRaw.startsWith('re_')) console.log('  ⚠ Resend keys normally start with "re_" — double-check you pasted the right key.');
   }
   console.log(`  → Leads will be delivered to: ${process.env.NOTIFY_EMAIL || 'info@standardpowerwashing.com'}`);
-  console.log(`  → FROM header: ${process.env.FROM_EMAIL || 'Standard Power Washing <onboarding@resend.dev>'}`);
+  console.log(`  → FROM header: ${process.env.FROM_EMAIL || 'Standard Power Washing <quotes@standardpowerwashing.com>'}`);
 });
