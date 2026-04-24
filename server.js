@@ -128,7 +128,33 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Standard Power Washing site running on port ${PORT}`);
-  if (!process.env.RESEND_API_KEY) {
-    console.log('⚠ RESEND_API_KEY not set. Quote emails disabled. Leads will be saved to leads.log');
+
+  // Startup diagnostics — exposes WHY the Resend key isn't picked up, without
+  // leaking the key itself. Looks for the variable, any near-miss names, and
+  // common paste mistakes (quotes, whitespace).
+  const resendRaw = process.env.RESEND_API_KEY;
+  const resendEnvKeys = Object.keys(process.env).filter(k => /resend/i.test(k));
+
+  if (typeof resendRaw === 'undefined') {
+    console.log('⚠ RESEND_API_KEY is UNDEFINED in this container.');
+    if (resendEnvKeys.length) {
+      console.log('  ↳ But these Resend-ish env keys ARE set:', resendEnvKeys.join(', '));
+      console.log('  ↳ Rename one of them to exactly "RESEND_API_KEY" in Railway → Variables.');
+    } else {
+      console.log('  ↳ No env vars matching /resend/i were found at all.');
+      console.log('  ↳ Check Railway → your service → Variables. Name must be exactly RESEND_API_KEY (no quotes).');
+    }
+  } else if (resendRaw === '') {
+    console.log('⚠ RESEND_API_KEY is set but EMPTY.');
+  } else {
+    const trimmed = resendRaw.trim().replace(/^["']|["']$/g, '');
+    const hadQuotes = trimmed !== resendRaw.trim();
+    const hadWhitespace = resendRaw !== resendRaw.trim();
+    console.log(`✓ RESEND_API_KEY is set (length=${resendRaw.length}, starts with "${resendRaw.slice(0, 3)}…")`);
+    if (hadWhitespace) console.log('  ⚠ Value has leading/trailing whitespace — remove it in Railway → Variables.');
+    if (hadQuotes)     console.log('  ⚠ Value is wrapped in quote characters — remove them in Railway → Variables.');
+    if (!resendRaw.startsWith('re_')) console.log('  ⚠ Resend keys normally start with "re_" — double-check you pasted the right key.');
   }
+  console.log(`  → Leads will be delivered to: ${process.env.NOTIFY_EMAIL || 'info@standardpowerwashing.com'}`);
+  console.log(`  → FROM header: ${process.env.FROM_EMAIL || 'Standard Power Washing <onboarding@resend.dev>'}`);
 });
