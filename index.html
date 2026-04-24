@@ -659,19 +659,27 @@
 
         const labelBase = 'absolute font-label text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white bg-black/70 backdrop-blur-sm px-2 py-1 rounded-md border hairline pointer-events-none transition-opacity duration-200';
 
+        // Mobile-friendly touch model:
+        // - Tile: touch-action: pan-y, so vertical page scroll always passes through
+        // - V-split (left/right slider): horizontal drag anywhere on the tile captures
+        //   the slider; vertical swipes scroll the page naturally
+        // - H-split (top/bottom slider): tile never captures touch; only the bigger
+        //   handle knob (46px, explicit drag target) does. Swiping elsewhere on
+        //   h-split tiles scrolls the page.
+        // Mouse still supports click-anywhere-to-jump on desktop regardless of split.
         return h('div', {
           ref,
           className: 'relative aspect-square overflow-hidden rounded-xl border hairline-2 bg-black/40 select-none group',
-          style: { touchAction: 'none', cursor: isV ? 'ew-resize' : 'ns-resize' },
+          style: { touchAction: 'pan-y', cursor: isV ? 'ew-resize' : 'ns-resize' },
           onMouseDown: onDown,
-          onTouchStart: onDown,
+          onTouchStart: isV ? onDown : undefined,
           role: 'img',
           'aria-label': alt
         },
           // AFTER layer (base)
-          h('div', { className: 'absolute inset-0', style: afterBg, 'aria-hidden': 'true' }),
+          h('div', { className: 'absolute inset-0 pointer-events-none', style: afterBg, 'aria-hidden': 'true' }),
           // BEFORE layer (clipped reveal)
-          h('div', { className: 'absolute inset-0', style: beforeBg, 'aria-hidden': 'true' }),
+          h('div', { className: 'absolute inset-0 pointer-events-none', style: beforeBg, 'aria-hidden': 'true' }),
           // Before label (top-left always)
           h('span', { className: labelBase + ' top-2.5 left-2.5', style: { opacity: pos > 8 ? 1 : 0.35 } }, 'Before'),
           // After label (opposite corner depending on split)
@@ -679,21 +687,29 @@
             className: labelBase + ' ' + (isV ? 'top-2.5 right-2.5' : 'bottom-2.5 right-2.5'),
             style: { opacity: pos < 92 ? 1 : 0.35 }
           }, 'After'),
-          // Slider line
+          // H-split "Drag" hint on the handle so users know it's the touch target
+          !isV && h('span', {
+            className: labelBase + ' left-1/2 -translate-x-1/2 pointer-events-none transition-opacity duration-200',
+            style: { top: 'calc(' + pos + '% + 32px)', opacity: dragging ? 0 : 0.75 }
+          }, 'Drag'),
+          // Slider line (decorative only — never intercepts touch)
           h('div', {
             className: 'absolute bg-white pointer-events-none',
             style: isV
               ? { top: 0, bottom: 0, left: pos + '%', width: '2.5px', transform: 'translateX(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
               : { left: 0, right: 0, top: pos + '%', height: '2.5px', transform: 'translateY(-50%)', boxShadow: '0 0 18px rgba(255,255,255,0.55), 0 0 3px rgba(0,0,0,0.4)' }
           }),
-          // Handle knob
+          // Handle knob — for h-split tiles, this is the ONLY touch-drag target
           h('div', {
-            className: 'absolute bg-white rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_0_4px_rgba(255,255,255,0.18)] pointer-events-none transition-transform duration-150',
-            style: isV
-              ? { top: '50%', left: pos + '%', width: '40px', height: '40px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.12)' : '') }
-              : { left: '50%', top: pos + '%', width: '40px', height: '40px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.12)' : '') }
+            className: 'absolute bg-white rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.35),0_0_0_4px_rgba(255,255,255,0.18)] transition-transform duration-150 ' + (isV ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing'),
+            style: Object.assign({},
+              isV
+                ? { top: '50%', left: pos + '%', width: '40px', height: '40px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.12)' : '') }
+                : { left: '50%', top: pos + '%', width: '46px', height: '46px', transform: 'translate(-50%,-50%)' + (dragging ? ' scale(1.18)' : ''), touchAction: 'none' }
+            ),
+            onTouchStart: isV ? undefined : onDown
           },
-            h('svg', { viewBox: '0 0 24 24', width: 14, height: 14, fill: '#0f172a', style: { transform: isV ? 'none' : 'rotate(90deg)' } },
+            h('svg', { viewBox: '0 0 24 24', width: isV ? 14 : 16, height: isV ? 14 : 16, fill: '#0f172a', style: { transform: isV ? 'none' : 'rotate(90deg)' } },
               h('path', { d: 'M8 5l-5 7 5 7M16 5l5 7-5 7' })
             )
           )
