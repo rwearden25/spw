@@ -49,11 +49,12 @@ Brand tokens live in `<style>` inside `index.html`:
 
 ```css
 :root {
-  --navy:#0f2558;        /* royal-blue brand */
-  --cream:#f5efe2;       /* paper canvas */
-  --brass:#b8893a;       /* heritage accent */
-  --ink:#0a1430;         /* text on cream */
+  --c0:#f3f1ec;   /* paper concrete canvas */
+  --c1:#e6e2d8;   /* light fill */
+  --c5:#2a2721;   /* dark band (benefits, quote) */
+  --ink:#0a0a0a;  /* raw ink — body type + rule lines */
+  --blue:#2556c9; /* royal blue — sole accent */
 }
 ```
 
-Aesthetic: **Navy Heritage** — royal-blue brand-first canvas with warm cream content bands and brass heritage accents. Fraunces (display) + Inter Tight (UI) typography. Inline SVG icons matching Lucide/Feather (the set `react-icons` ships as `lu*`/`fi*`).
+Aesthetic: **Concrete Brutalist** — warm concrete grays with royal blue as the *only* accent. Zero border-radius, exposed grid cells with hard 1px ink rules, extreme type scale (Archivo 900 display up to 7.75rem next to 0.66rem IBM Plex Mono metadata). No shadows, no gradients, no decorative ornament. Press-down (`translate`) interactions instead of scale. Archivo (display + body) + IBM Plex Mono (labels, numerics, captions).
