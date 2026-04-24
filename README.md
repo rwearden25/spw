@@ -49,12 +49,14 @@ Brand tokens live in `<style>` inside `index.html`:
 
 ```css
 :root {
-  --c0:#f3f1ec;   /* paper concrete canvas */
-  --c1:#e6e2d8;   /* light fill */
-  --c5:#2a2721;   /* dark band (benefits, quote) */
-  --ink:#0a0a0a;  /* raw ink — body type + rule lines */
-  --blue:#2556c9; /* royal blue — sole accent */
+  --bg:#ffffff;          /* white canvas */
+  --bg-soft:#f7f9fa;     /* off-white section fill */
+  --bg-tint:#eef9f8;     /* soft teal tint */
+  --ink:#1a202c;         /* dark charcoal body */
+  --teal:#14b8a6;        /* primary accent / CTA */
+  --teal-deep:#0f766e;   /* headings accent */
+  --teal-100:#99f6e4;    /* highlight */
 }
 ```
 
-Aesthetic: **Concrete Brutalist** — warm concrete grays with royal blue as the *only* accent. Zero border-radius, exposed grid cells with hard 1px ink rules, extreme type scale (Archivo 900 display up to 7.75rem next to 0.66rem IBM Plex Mono metadata). No shadows, no gradients, no decorative ornament. Press-down (`translate`) interactions instead of scale. Archivo (display + body) + IBM Plex Mono (labels, numerics, captions).
+Aesthetic: matches the live `standardpowerwashing.com` theme — white canvas, dark charcoal text, teal accents, soft rounded corners (10-20px), subtle shadows for depth, sticky blurred header, generous whitespace. **Manrope** geometric sans across display + body for a clean, modern, user-friendly feel. Gentle scroll-reveal animations; pulse indicator on hero badge; smooth press-down on buttons with teal shadow depth cue.
