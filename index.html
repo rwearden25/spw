@@ -516,8 +516,7 @@
                   key: s.id,
                   type: 'button',
                   'aria-expanded': isOpen,
-                  className: 'rv card-glass border hairline rounded-2xl text-left p-5 sm:p-6 cursor-pointer transition-all duration-300 focus:outline-none focus-visible:border-white/40 ' + (isOpen ? 'border-white/30' : ''),
-                  style: { transitionDelay: (0.04 * (i % 3)) + 's' },
+                  className: 'card-glass border hairline rounded-2xl text-left p-5 sm:p-6 cursor-pointer focus:outline-none focus-visible:border-white/40 ' + (isOpen ? 'border-white/30' : ''),
                   onClick: () => setOpen(isOpen ? null : s.id)
                 },
                   h('div', { className: 'flex items-start gap-3.5 mb-3' },
