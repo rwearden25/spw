@@ -135,7 +135,31 @@
     </style>
   </head>
   <body class="bg-hydro">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Pre-hydration fallback so the page is never blank -->
+      <noscript>
+        <div style="padding:3rem 1.25rem;max-width:720px;margin:0 auto;color:#e6edf5;font-family:Lato,system-ui,sans-serif">
+          <h1 style="font-family:Cinzel,serif;font-size:2rem;margin-bottom:1rem">Standard Power Washing LLC</h1>
+          <p style="margin-bottom:1rem">Professional power washing services for your home or business. Fort Worth, Texas.</p>
+          <p>Call <a style="color:#fff" href="tel:6823627638">682-362-7638</a> or email <a style="color:#fff" href="mailto:info@standardpowerwashing.com">info@standardpowerwashing.com</a></p>
+        </div>
+      </noscript>
+      <div id="boot" style="padding:6rem 1.25rem 3rem;max-width:720px;margin:0 auto;color:#e6edf5;font-family:Lato,system-ui,sans-serif;text-align:left">
+        <div style="font-family:Cinzel,serif;font-size:clamp(2rem,6vw,3rem);font-weight:600;line-height:1.05;margin-bottom:1rem">Standard Power Washing<span style="color:#b0c0d6;font-style:italic">.</span></div>
+        <div style="color:#b0c0d6;font-size:0.95rem;margin-bottom:2rem">Professional power washing services for your home or business. Fort Worth, Texas.</div>
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;color:#b0c0d6;font-size:0.85rem">
+          <span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(176,192,214,0.25);border-top-color:#b0c0d6;border-radius:50%;animation:sp .9s linear infinite"></span>
+          Loading…
+        </div>
+        <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(200,220,255,0.1);color:#7f8ea8;font-size:0.85rem;line-height:1.7">
+          Call <a style="color:#e6edf5;font-weight:600" href="tel:6823627638">682-362-7638</a>
+          &nbsp;·&nbsp;
+          <a style="color:#e6edf5;font-weight:600" href="mailto:info@standardpowerwashing.com">info@standardpowerwashing.com</a><br>
+          Mon – Sun &nbsp;·&nbsp; 7:00am – 7:00pm
+        </div>
+        <style>@keyframes sp{to{transform:rotate(360deg)}}</style>
+      </div>
+    </div>
 
     <script type="importmap">
       {
@@ -143,8 +167,7 @@
           "react": "https://esm.sh/react@18.3.1",
           "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
           "react-icons/fa6": "https://esm.sh/react-icons@5.3.0/fa6?external=react",
-          "react-icons/lu": "https://esm.sh/react-icons@5.3.0/lu?external=react",
-          "react-icons/gi": "https://esm.sh/react-icons@5.3.0/gi?external=react"
+          "react-icons/lu": "https://esm.sh/react-icons@5.3.0/lu?external=react"
         }
       }
     </script>
@@ -153,15 +176,13 @@
       import React from 'react';
       import { createRoot } from 'react-dom/client';
       import {
-        FaFacebookF, FaInstagram, FaPhone, FaRegEnvelope, FaLocationDot,
-        FaAngleRight, FaArrowRight, FaRegClock, FaCheck, FaRegMessage
+        FaFacebookF, FaInstagram, FaPhone, FaArrowRight, FaCheck, FaRegMessage
       } from 'react-icons/fa6';
       import {
-        LuDroplets, LuHouse, LuSquare, LuWaves, LuSun, LuTruck, LuLeaf,
-        LuShieldCheck, LuSparkles, LuMenu, LuX, LuChevronDown, LuMapPin,
-        LuMail, LuClock, LuPhone, LuSend, LuArrowRight
+        LuDroplets, LuHome, LuSquare, LuWaves, LuSun, LuTruck, LuLeaf,
+        LuShield, LuSparkles, LuMenu, LuX, LuChevronDown, LuMapPin,
+        LuMail, LuClock, LuPhone, LuSend
       } from 'react-icons/lu';
-      import { GiHouse, GiBrickWall, GiWaterDrop, GiBulldozer, GiWoodenFence } from 'react-icons/gi';
 
       const h = React.createElement;
       const { useState, useEffect, useRef } = React;
@@ -205,7 +226,7 @@
         },
         {
           id: 'house',
-          icon: LuHouse,
+          icon: LuHome,
           title: 'House Washing',
           tag: 'Eco-Friendly Solutions',
           img: IMG.house,
@@ -244,9 +265,9 @@
           d: "High-pressure water jets remove dirt, grime, mold, mildew, and other tough stains. The force effectively dislodges and cleans even the most stubborn debris." },
         { n: '02', t: 'Eco-Friendly', icon: LuLeaf,
           d: "Power washing typically requires only water and does not rely heavily on chemical cleaners — an environmentally friendly choice that minimizes harmful chemicals to plants, animals, and the environment." },
-        { n: '03', t: 'Safer Surfaces', icon: LuShieldCheck,
+        { n: '03', t: 'Safer Surfaces', icon: LuShield,
           d: "Pressure washing can significantly reduce slip-and-fall accidents caused by slippery surfaces." },
-        { n: '04', t: 'For Any Property', icon: GiHouse,
+        { n: '04', t: 'For Any Property', icon: LuHome,
           d: "Residential, commercial, and industrial — our experts are equipped with state-of-the-art technology to deliver exceptional results that exceed our customers' expectations." }
       ];
 
