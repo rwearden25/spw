@@ -273,6 +273,18 @@
       .icon-spring { transition: transform .55s cubic-bezier(.16,1,.3,1); }
       .card-glass:hover .icon-spring { transform: rotate(-8deg) scale(1.1); }
 
+      /* Product tiles: stronger lift than the default card-glass hover */
+      .product-tile { will-change: transform; }
+      .product-tile:hover {
+        transform: translateY(-8px);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.4),
+          inset 0 0 0 1px rgba(255,255,255,0.09),
+          0 40px 90px -16px rgba(0,0,0,0.6),
+          0 6px 16px rgba(0,0,0,0.3),
+          0 0 80px -10px rgba(160,200,240,0.45);
+      }
+
       /* Service image parallax-like zoom + brighten */
       .zoomable img { transition: transform 1s cubic-bezier(.16,1,.3,1), filter .5s ease; }
       .zoomable:hover img { transform: scale(1.07); filter: brightness(1.08) saturate(1.08); }
@@ -447,7 +459,8 @@
       import {
         LuDroplets, LuHome, LuSquare, LuWaves, LuSun, LuTruck, LuLeaf,
         LuShield, LuSparkles, LuMenu, LuX, LuChevronDown, LuMapPin,
-        LuMail, LuClock, LuPhone, LuSend
+        LuMail, LuClock, LuPhone, LuSend,
+        LuArrowUpRight, LuWrench, LuRadar, LuFileText, LuMic
       } from 'react-icons/lu';
 
       const h = React.createElement;
@@ -491,6 +504,15 @@
 
       const ALSO = ['Commercial Pressure Washing', 'Graffiti Removal', 'Deck & Fence Cleaning', 'Paths, Lots & Delivery Areas'];
 
+      // --- Products (SPW Inc software portfolio) ---
+      // Tile-only entries — title + URL only. Add taglines/descriptions when copy is ready.
+      const PRODUCTS = [
+        { id: 'psupp',        title: 'psupp.ai',        url: 'https://psupp.ai',        icon: LuWrench   },
+        { id: 'pzip',         title: 'pzip.ai',         url: 'https://pzip.ai',         icon: LuRadar    },
+        { id: 'pquote',       title: 'pquote.ai',       url: 'https://pquote.ai',       icon: LuFileText },
+        { id: 'pquote-voice', title: 'pquote.ai/voice', url: 'https://pquote.ai/voice', icon: LuMic      }
+      ];
+
       const BENEFITS = [
         { n: '01', t: 'Powerful Results', icon: LuSparkles,
           d: "High-pressure water jets remove dirt, grime, mold, mildew, and other tough stains. The force effectively dislodges and cleans even the most stubborn debris." },
@@ -504,7 +526,7 @@
 
       const NAV = [
         { id: 'home', label: 'Home' },
-        { id: 'services', label: 'Services' },
+        { id: 'products', label: 'Products' },
         { id: 'work', label: 'Our Work' },
         { id: 'benefits', label: 'Benefits' },
         { id: 'about', label: 'About' },
@@ -623,6 +645,9 @@
             h('div', { className: 'flex flex-wrap justify-center gap-2.5 mb-4' },
               h('a', { href: '#quote', className: 'inline-flex items-center gap-2 h-14 px-7 rounded-md btn-primary font-label font-bold text-[0.92rem] uppercase tracking-wide transition' },
                 'Request a Free Estimate', h(FaArrowRight, { className: 'text-sm' })
+              ),
+              h('a', { href: '#products', className: 'inline-flex items-center gap-2 h-14 px-7 rounded-md border hairline-2 bg-white/5 hover:bg-white/10 text-white font-label font-bold text-[0.92rem] uppercase tracking-wide transition backdrop-blur-sm', style: { textShadow: '0 1px 6px rgba(0,0,0,0.6)' } },
+                'Our Products', h(FaArrowRight, { className: 'text-sm' })
               )
             ),
             h('a', { href: 'tel:' + PHONE_RAW, className: 'inline-flex items-center gap-2 text-white font-label font-semibold text-[0.95rem] mb-10 hover:text-steel transition', style: { textShadow: '0 1px 6px rgba(0,0,0,0.7)' } },
@@ -703,6 +728,43 @@
           )
         );
       };
+
+      // --- Products (SPW Inc software portfolio) ---
+      // Each tile is a full-bleed external link: opens in a new tab, lifts on hover.
+      const Products = () => h('section', { id: 'products', className: 'relative py-20 sm:py-24 border-t hairline' },
+        h('div', { className: 'max-w-6xl mx-auto px-4 sm:px-6' },
+          h('div', { className: 'rv spot max-w-2xl mb-12' },
+            h(Label, null, 'Our Products'),
+            h('h2', { className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-4', style: { fontSize: 'clamp(2rem, 5.5vw, 3rem)' } },
+              'Our ', h('span', { className: 'text-steel italic' }, 'products.')
+            )
+          ),
+          h('div', { className: 'grid gap-3.5 sm:grid-cols-2' },
+            PRODUCTS.map((p) =>
+              h('a', {
+                key: p.id,
+                href: p.url,
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                'aria-label': p.title + ' (opens in new tab)',
+                className: 'product-tile card-glass border hairline rounded-2xl p-6 sm:p-7 block group focus:outline-none focus-visible:border-white/40'
+              },
+                h('div', { className: 'flex items-center gap-4' },
+                  h('span', { className: 'icon-spring w-14 h-14 sm:w-16 sm:h-16 rounded-xl border hairline-2 flex items-center justify-center text-white bg-white/10 flex-shrink-0' },
+                    h(p.icon, { className: 'text-2xl sm:text-3xl' })
+                  ),
+                  h('div', { className: 'flex-1 min-w-0' },
+                    h('h3', { className: 'font-display text-white text-2xl sm:text-3xl font-semibold leading-tight tracking-tight' }, p.title),
+                    h('div', { className: 'font-label text-[0.7rem] uppercase font-semibold text-steel tracking-[0.18em] mt-1.5 flex items-center gap-1.5' },
+                      'Open app', h(LuArrowUpRight, { className: 'text-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' })
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
 
       // --- Before/After compare slider (true reveal) ---
       // Each source image is a pre-composed before+after.
@@ -1315,7 +1377,7 @@
           h('main', { className: 'grain relative' },
             h(Hero, null),
             h(Estimator, null),
-            h(Services, null),
+            h(Products, null),
             h(Work, null),
             h(Benefits, null),
             h(About, null),
