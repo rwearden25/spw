@@ -141,7 +141,7 @@ ${body}
 });
 
 app.get('/robots.txt', (req, res) => {
-  const host = process.env.SITE_URL || 'https://standardpowerwashing.com';
+  const host = process.env.SITE_URL || 'https://www.standardpowerwashing.com';
   res.type('text/plain');
   // Explicitly invite major crawlers and declare the sitemap.
   res.send(
