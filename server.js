@@ -123,7 +123,7 @@ app.get('/sitemap.xml', (req, res) => {
   // discovery target for service-specific queries (e.g. "roof cleaning fort worth").
   const urls = [
     { path: '/',            pri: '1.0', freq: 'weekly' },
-    { path: '/#services',   pri: '0.9', freq: 'monthly' },
+    { path: '/#products',   pri: '0.9', freq: 'monthly' },
     { path: '/#estimator',  pri: '0.9', freq: 'monthly' },
     { path: '/#work',       pri: '0.8', freq: 'weekly' },
     { path: '/#benefits',   pri: '0.7', freq: 'monthly' },
