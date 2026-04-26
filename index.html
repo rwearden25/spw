@@ -982,44 +982,29 @@
         )
       );
 
-      // --- Ballpark Estimator ---
-      // NOTE: These per-sqft rates are conservative DFW-market ballparks.
-      // Ross: tune the RATES / MULT table below to match your actual
-      // pricing before relying on this for hard numbers. Output is always
-      // presented as a "ballpark" range, never a commitment.
+      // --- Project Configurator ---
+      // Lead-capture only: collects service + property + size, then prefills
+      // the #quote form. No prices are computed or displayed publicly to
+      // avoid anchoring negotiation on a published per-sqft rate.
       const Estimator = () => {
         const [svc, setSvc] = useState('house');
         const [sqft, setSqft] = useState(1500);
         const [prop, setProp] = useState('Residential');
 
-        const RATES = {
-          house:      { label: 'House Wash',         detail: 'Siding · Eaves · Gutters', min: 0.18, max: 0.32, icon: LuHome },
-          concrete:   { label: 'Concrete',           detail: 'Driveways · Patios · Sidewalks', min: 0.15, max: 0.22, icon: LuSquare },
-          roof:       { label: 'Roof',               detail: 'Soft-wash · Algae removal', min: 0.25, max: 0.45, icon: LuSun },
-          commercial: { label: 'Commercial',         detail: 'Storefronts · Drive-thrus · Fleets', min: 0.10, max: 0.18, icon: LuShield }
+        const SERVICE_OPTIONS = {
+          house:      { label: 'House Wash', detail: 'Siding · Eaves · Gutters',           icon: LuHome   },
+          concrete:   { label: 'Concrete',   detail: 'Driveways · Patios · Sidewalks',     icon: LuSquare },
+          roof:       { label: 'Roof',       detail: 'Soft-wash · Algae removal',          icon: LuSun    },
+          commercial: { label: 'Commercial', detail: 'Storefronts · Drive-thrus · Fleets', icon: LuShield }
         };
-        const MULT = { Residential: 1.0, Commercial: 0.92, Industrial: 0.85 };
-
-        const r = RATES[svc];
-        const m = MULT[prop] || 1;
-        // No global floor: every quote is rate × sqft × multiplier so each
-        // service shows its own per-sqft starting point even at 200 sqft.
-        // Rounding granularity scales with the price so small jobs don't
-        // collapse into the same display number.
-        const round = (n) => {
-          if (n < 200) return Math.round(n / 5) * 5;
-          if (n < 500) return Math.round(n / 10) * 10;
-          return Math.round(n / 25) * 25;
-        };
-        const lo = round(sqft * r.min * m);
-        const hi = round(sqft * r.max * m);
+        const r = SERVICE_OPTIONS[svc];
 
         const goToForm = () => {
           window.dispatchEvent(new CustomEvent('spw:prefill', {
             detail: {
               propertyType: prop,
               sqft: String(sqft),
-              details: `Estimator inquiry: ${r.label.toLowerCase()}, approximately ${sqft.toLocaleString()} sq ft, ${prop.toLowerCase()} property. Ballpark showed $${lo}–$${hi}.`
+              details: `Project inquiry: ${r.label.toLowerCase()}, approximately ${sqft.toLocaleString()} sq ft, ${prop.toLowerCase()} property.`
             }
           }));
           const t = document.getElementById('quote');
@@ -1034,15 +1019,15 @@
         return h('section', { id: 'estimator', className: 'relative py-16 sm:py-20 border-t hairline' },
           h('div', { className: 'max-w-3xl mx-auto px-4 sm:px-6' },
             h('div', { className: 'rv spot text-center max-w-2xl mx-auto mb-8' },
-              h(Label, { className: 'justify-center' }, 'Ballpark In 10 Seconds'),
+              h(Label, { className: 'justify-center' }, 'Plan a Project'),
               h('h2', {
                 className: 'font-display text-white font-semibold leading-[1.04] tracking-tight mb-3',
                 style: { fontSize: 'clamp(1.85rem, 5vw, 2.75rem)' }
               },
-                'Price a project ', h('span', { className: 'text-steel italic' }, 'right now.')
+                'Tell us about ', h('span', { className: 'text-steel italic' }, 'your project.')
               ),
               h('p', { className: 'text-white/70 leading-relaxed text-[0.95rem]' },
-                "Pick a service, a rough size, and we'll show you a ballpark range. Final quote comes after we see the job."
+                "Pick what needs cleaning and a rough size — we'll respond with a personal quote based on your details."
               )
             ),
             h('div', { className: 'rv card-glass border hairline rounded-2xl p-5 sm:p-7' },
@@ -1050,12 +1035,12 @@
               h('div', { className: 'mb-5' },
                 h('div', { className: 'font-label text-[0.68rem] uppercase font-bold tracking-[0.14em] text-steel mb-3' }, '1  ·  What needs cleaning?'),
                 h('div', { className: 'flex flex-wrap gap-2' },
-                  Object.keys(RATES).map((k) => h('button', {
+                  Object.keys(SERVICE_OPTIONS).map((k) => h('button', {
                     key: k, type: 'button', onClick: () => setSvc(k),
                     className: chip(svc === k)
                   },
-                    h(RATES[k].icon, { className: 'text-sm opacity-80' }),
-                    RATES[k].label
+                    h(SERVICE_OPTIONS[k].icon, { className: 'text-sm opacity-80' }),
+                    SERVICE_OPTIONS[k].label
                   ))
                 ),
                 h('div', { className: 'text-steel text-[0.78rem] mt-2 font-light' }, r.detail)
@@ -1089,18 +1074,20 @@
                   h('span', null, '200'), h('span', null, '8,000+')
                 )
               ),
-              // Output
+              // Project summary (no price — lead capture only)
               h('div', { className: 'rounded-xl border border-white/20 bg-gradient-to-br from-white/10 to-white/[0.03] px-5 py-5 relative overflow-hidden' },
                 h('div', { className: 'absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl', style: { background: 'rgba(170,210,245,0.25)' } }),
                 h('div', { className: 'relative' },
-                  h('div', { className: 'font-label text-[0.66rem] uppercase font-bold tracking-[0.2em] text-steel mb-1' }, 'Ballpark Range'),
-                  h('div', { className: 'flex items-baseline gap-2 mb-1' },
-                    h('div', { className: 'font-display text-white font-semibold tabular-nums', style: { fontSize: 'clamp(2rem, 6vw, 2.85rem)', lineHeight: 1 } },
-                      '$', lo.toLocaleString(), h('span', { className: 'text-steel mx-2' }, '–'), '$', hi.toLocaleString()
-                    )
+                  h('div', { className: 'font-label text-[0.66rem] uppercase font-bold tracking-[0.2em] text-steel mb-2' }, 'Your Project'),
+                  h('div', { className: 'font-display text-white font-semibold leading-tight tracking-tight tabular-nums', style: { fontSize: 'clamp(1.35rem, 3.5vw, 1.85rem)' } },
+                    r.label,
+                    h('span', { className: 'text-steel mx-2 font-normal' }, '·'),
+                    sqft.toLocaleString(), h('span', { className: 'text-steel ml-1 text-[0.65em] font-normal' }, ' sq ft'),
+                    h('span', { className: 'text-steel mx-2 font-normal' }, '·'),
+                    prop
                   ),
-                  h('div', { className: 'text-white/55 text-[0.82rem] font-light' },
-                    'Ballpark only · final quote based on a site walk-through or photos'
+                  h('div', { className: 'text-white/55 text-[0.82rem] font-light mt-2.5' },
+                    "We'll review your project and follow up with a personal quote."
                   )
                 )
               ),
@@ -1108,7 +1095,7 @@
                 type: 'button', onClick: goToForm,
                 className: 'w-full mt-5 h-14 rounded-md btn-primary font-label font-bold text-[0.92rem] uppercase tracking-wide transition flex items-center justify-center gap-2'
               },
-                'Get a Detailed Quote', h(FaArrowRight, { className: 'text-sm' })
+                'Send My Project', h(FaArrowRight, { className: 'text-sm' })
               )
             )
           )
