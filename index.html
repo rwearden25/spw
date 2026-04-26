@@ -984,7 +984,7 @@
 
       // --- Ballpark Estimator ---
       // NOTE: These per-sqft rates are conservative DFW-market ballparks.
-      // Ross: tune the RATES / MULT / FLOOR table below to match your actual
+      // Ross: tune the RATES / MULT table below to match your actual
       // pricing before relying on this for hard numbers. Output is always
       // presented as a "ballpark" range, never a commitment.
       const Estimator = () => {
@@ -999,13 +999,20 @@
           commercial: { label: 'Commercial',         detail: 'Storefronts · Drive-thrus · Fleets', min: 0.10, max: 0.18, icon: LuShield }
         };
         const MULT = { Residential: 1.0, Commercial: 0.92, Industrial: 0.85 };
-        const FLOOR = 150;
 
         const r = RATES[svc];
         const m = MULT[prop] || 1;
-        const roundTo25 = (n) => Math.round(n / 25) * 25;
-        const lo = Math.max(FLOOR, roundTo25(sqft * r.min * m));
-        const hi = Math.max(FLOOR + 75, roundTo25(sqft * r.max * m));
+        // No global floor: every quote is rate × sqft × multiplier so each
+        // service shows its own per-sqft starting point even at 200 sqft.
+        // Rounding granularity scales with the price so small jobs don't
+        // collapse into the same display number.
+        const round = (n) => {
+          if (n < 200) return Math.round(n / 5) * 5;
+          if (n < 500) return Math.round(n / 10) * 10;
+          return Math.round(n / 25) * 25;
+        };
+        const lo = round(sqft * r.min * m);
+        const hi = round(sqft * r.max * m);
 
         const goToForm = () => {
           window.dispatchEvent(new CustomEvent('spw:prefill', {
