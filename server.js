@@ -124,6 +124,7 @@ app.get('/sitemap.xml', (req, res) => {
   const urls = [
     { path: '/',            pri: '1.0', freq: 'weekly' },
     { path: '/#products',   pri: '0.9', freq: 'monthly' },
+    { path: '/#services',   pri: '0.9', freq: 'monthly' },
     { path: '/#estimator',  pri: '0.9', freq: 'monthly' },
     { path: '/#work',       pri: '0.8', freq: 'weekly' },
     { path: '/#benefits',   pri: '0.7', freq: 'monthly' },
