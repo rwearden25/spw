@@ -7,11 +7,20 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve the single-file site + any future static assets from project root
+// Serve the single-file site + any future static assets from project root.
+// Cache strategy: always revalidate HTML so new deploys are visible immediately
+// (mobile browsers and the Fastly edge in front of Railway both honor this);
+// keep static assets cached aggressively since they change less often.
 app.use(express.static(__dirname, {
-  maxAge: '7d',
   etag: true,
-  index: 'index.html'
+  index: 'index.html',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    }
+  }
 }));
 
 // Per-IP rate limiter (5 submissions / hour)
