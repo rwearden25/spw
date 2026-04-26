@@ -505,12 +505,17 @@
       const ALSO = ['Commercial Pressure Washing', 'Graffiti Removal', 'Deck & Fence Cleaning', 'Paths, Lots & Delivery Areas'];
 
       // --- Products (SPW Inc software portfolio) ---
-      // Tile-only entries — title + URL only. Add taglines/descriptions when copy is ready.
+      // Taglines below are sourced verbatim from each app's own public site
+      // (meta description, page title, or in-product label) — not invented copy.
       const PRODUCTS = [
-        { id: 'psupp',        title: 'psupp.ai',        url: 'https://psupp.ai',        icon: LuWrench   },
-        { id: 'pzip',         title: 'pzip.ai',         url: 'https://pzip.ai',         icon: LuRadar    },
-        { id: 'pquote',       title: 'pquote.ai',       url: 'https://pquote.ai',       icon: LuFileText },
-        { id: 'pquote-voice', title: 'pquote.ai/voice', url: 'https://pquote.ai/voice', icon: LuMic      }
+        { id: 'psupp',        title: 'psupp.ai',        url: 'https://psupp.ai',
+          tag: 'AI diagnostic assistant for pressure washer technicians.', icon: LuWrench   },
+        { id: 'pzip',         title: 'pzip.ai',         url: 'https://pzip.ai',
+          tag: 'Field service dispatch, jobs, customers, and scheduling.', icon: LuRadar    },
+        { id: 'pquote',       title: 'pquote.ai',       url: 'https://pquote.ai',
+          tag: 'Field quotes in 60 seconds.', icon: LuFileText },
+        { id: 'pquote-voice', title: 'pquote.ai/voice', url: 'https://www.pquote.ai/voice',
+          tag: 'Voice quote — pquote field transmission.', icon: LuMic      }
       ];
 
       const BENEFITS = [
@@ -527,6 +532,7 @@
       const NAV = [
         { id: 'home', label: 'Home' },
         { id: 'products', label: 'Products' },
+        { id: 'services', label: 'Services' },
         { id: 'work', label: 'Our Work' },
         { id: 'benefits', label: 'Benefits' },
         { id: 'about', label: 'About' },
@@ -749,7 +755,7 @@
                 'aria-label': p.title + ' (opens in new tab)',
                 className: 'product-tile card-glass border hairline rounded-2xl p-6 sm:p-7 block group focus:outline-none focus-visible:border-white/40'
               },
-                h('div', { className: 'flex items-center gap-4' },
+                h('div', { className: 'flex items-start gap-4 mb-4' },
                   h('span', { className: 'icon-spring w-14 h-14 sm:w-16 sm:h-16 rounded-xl border hairline-2 flex items-center justify-center text-white bg-white/10 flex-shrink-0' },
                     h(p.icon, { className: 'text-2xl sm:text-3xl' })
                   ),
@@ -759,7 +765,8 @@
                       'Open app', h(LuArrowUpRight, { className: 'text-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5' })
                     )
                   )
-                )
+                ),
+                h('p', { className: 'text-white/80 text-[0.95rem] leading-relaxed' }, p.tag)
               )
             )
           )
@@ -1378,6 +1385,7 @@
             h(Hero, null),
             h(Estimator, null),
             h(Products, null),
+            h(Services, null),
             h(Work, null),
             h(Benefits, null),
             h(About, null),
