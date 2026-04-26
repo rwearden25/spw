@@ -1,10 +1,36 @@
 # Standard Power Washing — Site
 
-Single-page marketing site for **Standard Power Washing LLC** (Fort Worth, TX). Copy and contact details mirror [standardpowerwashing.com](https://standardpowerwashing.com). Served by Express with a Resend-backed quote endpoint.
+Single-page marketing site for **Standard Power Washing LLC** (Fort Worth, TX). Live at [www.standardpowerwashing.com](https://www.standardpowerwashing.com). Served by Express with a Resend-backed lead endpoint.
 
 - **Contact:** 682-362-7638 · info@standardpowerwashing.com
 - **Hours:** Mon–Sun, 7:00am – 7:00pm
 - **Service:** Residential · Commercial · Industrial
+
+## Section structure (top to bottom)
+
+1. **Hero** — full-bleed Getty video, primary CTA "Request a Free Estimate" → `#quote`, secondary CTA "Our Products" → `#products`
+2. **Plan a Project** (`#estimator`) — interactive lead-capture configurator (service · property · sqft). **No prices displayed** — see Public pricing policy below
+3. **Products** (`#products`) — SPW Inc software portfolio tiles linking out to `psupp.ai`, `pzip.ai`, `pquote.ai`, `www.pquote.ai/voice`
+4. **Services** (`#services`) — pressure-washing service cards (House Wash, Concrete, Roof, etc.) — keyword-rich body copy for SEO
+5. **Our Work** (`#work`) — before/after compare sliders
+6. **Benefits** (`#benefits`)
+7. **About** (`#about`)
+8. **Request a Quote** (`#quote`) — contact form, posts to `/api/quote`
+9. **Contact** (`#contact`)
+
+## Public pricing policy
+
+> **Do not display dollar amounts, per-sqft rates, tier brackets, or quote ranges anywhere on the public site.**
+
+Every visible surface is lead-capture only. The `Estimator` component still collects service / property / sqft as hand-raise signals, but feeds them straight into the contact form via a `spw:prefill` CustomEvent — no math, no $, no ranges. Internal-only tools can show pricing freely; the rule applies to *public* surfaces (anything served from this repo).
+
+Rationale: published rates anchor negotiation, leak competitive intel, and undercut mid-market positioning ("not the cheapest, not the priciest"). If a future change request asks to "add a price calculator" or "show pricing," push back and confirm before implementing.
+
+## Domain & cache topology
+
+- **Canonical host:** `www.standardpowerwashing.com`. The bare apex `standardpowerwashing.com` 301-forwards to `www` via GoDaddy domain forwarding (registrar-level, no Railway DNS swap needed). All `<link rel="canonical">`, OG/Twitter URLs, and JSON-LD `@id`/`url` values point at `www`.
+- **HTML cache:** `index.html` is served with `Cache-Control: public, max-age=0, must-revalidate` so deploys are visible immediately on returning visitors and on the Fastly edge in front of Railway. Static assets (anything non-`.html`) get `public, max-age=604800, immutable`.
+- **OG image:** currently the SPW logo at 1200×1200 (Wix-CDN sourced). A proper 1200×630 designed card committed to this repo as `og-image.png` is a known follow-up; the meta tags will switch to it when the asset exists.
 
 ## Run locally
 
